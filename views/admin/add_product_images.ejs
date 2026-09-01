@@ -1,0 +1,16 @@
+<%- include('navbar.ejs') %>
+
+<div class="container mt-4">
+  <h3>Add Product Images</h3>
+
+  <form action="/admin/add_product_images/<%= product_id %>" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="images" class="form-label">Select Product Images (You can select multiple)</label>
+      <input type="file" name="product_images" id="images" class="form-control" multiple required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Upload Images</button>
+  </form>
+</div>
+
+<%- include('footer.ejs') %>

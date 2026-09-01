@@ -1,0 +1,83 @@
+<h1 class="text-center">Product</h1>
+<%- include('navbar') %>
+
+<div class="container bg-white p-4 shadow-sm mt-4">
+    <div class="row justify-content-center">
+        <!-- Centered Form -->
+        <div class="col-md-8">
+            <div class="card p-4 shadow-sm">
+                <h3 class="mb-4 text-center">Add New Product</h3>
+
+                <form action="/admin/save_product" method="post" enctype="multipart/form-data" class="row g-3">
+
+                    <!-- Product Name -->
+                    <div class="col-md-6">
+                        Product Name
+                        <input type="text" name="product_name" placeholder="Product Name" class="form-control" required>
+                    </div>
+
+                    <!-- Category Selection -->
+                    <div class="col-md-6">
+                        Category
+                        <select name="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <% categories.forEach(function(category){ %>
+                                <option value="<%= category.category_id %>"><%= category.category_name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <!-- Product Brand -->
+                    <div class="col-md-6">
+                        Product Brand
+                        <input type="text" name="product_brand" placeholder="Product Brand" class="form-control" required>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-6">
+                        Product Details
+                        <input type="text" name="product_details" placeholder="Product Details" class="form-control" required>
+                    </div>
+
+                    <!-- Product Colors -->
+                    <div class="col-md-6">
+                        Product Colors
+                        <input type="text" name="product_colors" placeholder="Product Colors (comma separated)" class="form-control">
+                    </div>
+
+                    <!-- Product Main Image -->
+                    <div class="col-md-6">
+                        Product Main Image
+                        <input type="file" name="product_main_image" class="form-control" required>
+                    </div>
+
+                    <!-- Is Highlighted -->
+                    <div class="col-md-6">
+                        Is Highlighted
+                        <select name="is_highlighted" class="form-select">
+                            <option value="No" selected>No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+
+                    <!-- Is Most Selling -->
+                    <div class="col-md-6">
+                        Is Most Selling
+                        <select name="is_most_selling" class="form-select">
+                            <option value="No" selected>No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary px-4">Add Product</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer') %>

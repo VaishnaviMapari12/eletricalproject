@@ -1,0 +1,231 @@
+<%- include('navbar.ejs') %>
+
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h3 class="mb-1">Store Settings</h3>
+          <div class="text-muted">Configure your e-commerce website preferences</div>
+        </div>
+        <div>
+          <button type="submit" form="settingsForm" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+
+          <ul class="nav nav-tabs px-3 pt-3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-general" type="button" role="tab">
+                <i class="fas fa-gear me-1"></i> General
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-appearance" type="button" role="tab">
+                <i class="fas fa-palette me-1"></i> Appearance
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-commerce" type="button" role="tab">
+                <i class="fas fa-store me-1"></i> Commerce
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-social" type="button" role="tab">
+                <i class="fas fa-hashtag me-1"></i> Social
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-integrations" type="button" role="tab">
+                <i class="fas fa-plug me-1"></i> Integrations
+              </button>
+            </li>
+          </ul>
+
+          <form id="settingsForm" action="/admin/save_settings" method="post" enctype="multipart/form-data" class="tab-content p-3 p-md-4">
+
+            <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Store Name</label>
+                  <input type="text" name="store_name" class="form-control" placeholder="e.g., ElectroStore" value="<%= settings && settings.store_name || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Contact Email</label>
+                  <input type="email" name="contact_email" class="form-control" placeholder="support@example.com" value="<%= settings && settings.contact_email || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Contact Phone</label>
+                  <input type="text" name="contact_phone" class="form-control" placeholder="+91 98765 43210" value="<%= settings && settings.contact_phone || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Support Address</label>
+                  <input type="text" name="support_address" class="form-control" placeholder="City, State, Country" value="<%= settings && settings.support_address || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Store Logo</label>
+                  <input type="file" name="store_logo" class="form-control">
+                  <div class="form-text">PNG/JPG up to 1MB</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Favicon</label>
+                  <input type="file" name="favicon" class="form-control">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-appearance" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Theme</label>
+                  <select class="form-select" name="theme">
+                    <option value="light" <%= settings && settings.theme==='light' ? 'selected' : '' %>>Light</option>
+                    <option value="dark" <%= settings && settings.theme==='dark' ? 'selected' : '' %>>Dark</option>
+                    <option value="system" <%= settings && settings.theme==='system' ? 'selected' : '' %>>System</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Primary Color</label>
+                  <input type="color" class="form-control form-control-color" name="primary_color" value="<%= settings && settings.primary_color || '#0d6efd' %>">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Homepage Banner Text</label>
+                  <input type="text" class="form-control" name="banner_text" placeholder="Big sale up to 50% off" value="<%= settings && settings.banner_text || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-commerce" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">Currency</label>
+                  <select class="form-select" name="currency">
+                    <option value="INR" <%= settings && settings.currency==='INR' ? 'selected' : '' %>>INR (₹)</option>
+                    <option value="USD" <%= settings && settings.currency==='USD' ? 'selected' : '' %>>USD ($)</option>
+                    <option value="EUR" <%= settings && settings.currency==='EUR' ? 'selected' : '' %>>EUR (€)</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Tax (%)</label>
+                  <input type="number" step="0.01" class="form-control" name="tax_percent" placeholder="18" value="<%= settings && settings.tax_percent || '' %>">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Default Shipping (₹)</label>
+                  <input type="number" step="0.01" class="form-control" name="shipping_charge" placeholder="49" value="<%= settings && settings.shipping_charge || '' %>">
+                </div>
+
+                <div class="col-md-12">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="cod_enabled" <%= settings && settings.cod_enabled ? 'checked' : '' %>>
+                        <label class="form-check-label">Cash on Delivery</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="razorpay_enabled" <%= settings && settings.razorpay_enabled ? 'checked' : '' %>>
+                        <label class="form-check-label">Razorpay</label>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="stripe_enabled" <%= settings && settings.stripe_enabled ? 'checked' : '' %>>
+                        <label class="form-check-label">Stripe</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Free Shipping Threshold (₹)</label>
+                  <input type="number" step="0.01" class="form-control" name="free_shipping_threshold" placeholder="999" value="<%= settings && settings.free_shipping_threshold || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Low Stock Warning (qty)</label>
+                  <input type="number" class="form-control" name="low_stock_threshold" placeholder="5" value="<%= settings && settings.low_stock_threshold || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-social" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Facebook URL</label>
+                  <input type="url" class="form-control" name="facebook_url" placeholder="https://facebook.com/yourpage" value="<%= settings && settings.facebook_url || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Instagram URL</label>
+                  <input type="url" class="form-control" name="instagram_url" placeholder="https://instagram.com/yourpage" value="<%= settings && settings.instagram_url || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Twitter/X URL</label>
+                  <input type="url" class="form-control" name="twitter_url" placeholder="https://twitter.com/yourpage" value="<%= settings && settings.twitter_url || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">YouTube URL</label>
+                  <input type="url" class="form-control" name="youtube_url" placeholder="https://youtube.com/@yourchannel" value="<%= settings && settings.youtube_url || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-integrations" role="tabpanel">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Google Analytics ID</label>
+                  <input type="text" class="form-control" name="ga_id" placeholder="G-XXXXXXXXXX" value="<%= settings && settings.ga_id || '' %>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Facebook Pixel ID</label>
+                  <input type="text" class="form-control" name="fb_pixel" placeholder="XXXXXXXXXXXXXXX" value="<%= settings && settings.fb_pixel || '' %>">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Custom Head Scripts</label>
+                  <textarea class="form-control" rows="4" name="head_scripts" placeholder="<script>/* your code */</script>"><%= settings && settings.head_scripts || '' %></textarea>
+                </div>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <div class="mt-3 text-muted small">
+        <i class="fas fa-info-circle"></i> Tip: Click Save Changes after updating any settings.
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer.ejs') %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%- include('footer.ejs') %>

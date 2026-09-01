@@ -1,0 +1,811 @@
+<!-- <h1>Pay Now</h1>
+
+<h2>Order Details</h2>
+<p>Order ID: <%= order[0].order_id %></p>
+<p>Order Date: <%= order[0].order_date %></p>
+<p>Total Amount: <%= order[0].total_amount %></p>
+<p>Status: <%= order[0].status %></p>
+<p>Payment: <%= order[0].payment %></p>
+<p>Payment Status: <%= order[0].payment_status %></p>
+<p>Transaction ID: <%= order[0].trasaction_id %></p>
+<p>Notes: <%= order[0].notes %></p>
+
+<h2>Customer Info</h2>
+<p><%= order[0].first_name %> <%= order[0].last_name %></p>
+<p>Email: <%= order[0].email %></p>
+<p>Phone: <%= order[0].phone %></p>
+<p>Address: <%= order[0].address %>, <%= order[0].city %>, <%= order[0].state %>, <%= order[0].country %> - <%= order[0].zip_code %></p>
+
+<hr>
+
+
+
+
+
+
+
+
+
+
+
+<button id="rzp-button1">Pay</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    "key": "rzp_test_GmXyAFAK01Uo7t", 
+    "amount": "<%= order[0].total_amount * 100 %>",  // convert to paise
+    "currency": "INR",
+    "name": "a2z ecom",
+    "description": "Order Payment",
+    "image": "https://a2zithub.org/uploads/173114251034582044.png",
+    "order_id": "<%= order[0].razorpay_order_id %>", // Razorpay Order ID from backend
+    "callback_url": "http://localhost:1000/verify-payment/<%= order[0].order_id %>",
+    "prefill": {
+      "name": "<%= order[0].first_name %> <%= order[0].last_name %>",
+      "email": "<%= order[0].email %>",
+      "contact": "<%= order[0].phone %>"
+    },
+    "notes": {
+      "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+      "color": "#28a745"
+    }
+  };
+
+  var rzp1 = new Razorpay(options);
+  document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+  }
+</script> -->
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pay Now - ElectroStore</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+
+<body class="bg-light">
+
+
+  <div class="container py-5">
+
+    <div class="row justify-content-center">
+
+      <div class="col-lg-8">
+
+        <div class="card shadow border-0">
+
+          <div class="card-header bg-primary text-white">
+
+            <h3 class="mb-0">
+              Complete Payment
+            </h3>
+
+          </div>
+
+
+          <div class="card-body p-4">
+
+
+            <!-- ============================= -->
+            <!-- ORDER DETAILS -->
+            <!-- ============================= -->
+
+            <h4 class="mb-3">
+              Order Details
+            </h4>
+
+
+            <p>
+              <strong>Order ID:</strong>
+
+              <%= order[0].order_id %>
+            </p>
+
+
+            <p>
+              <strong>Order Date:</strong>
+
+              <%= order[0].order_date || "-" %>
+            </p>
+
+
+            <p>
+              <strong>Total Amount:</strong>
+
+              ₹<%= Number(order[0].total_amount || 0).toFixed(2) %>
+            </p>
+
+
+            <p>
+              <strong>Status:</strong>
+
+              <%= order[0].status || "-" %>
+            </p>
+
+
+            <p>
+              <strong>Payment:</strong>
+
+              <%= order[0].payment || "-" %>
+            </p>
+
+
+            <p>
+              <strong>Payment Status:</strong>
+
+              <%= order[0].payment_status || "-" %>
+            </p>
+
+
+            <hr>
+
+
+            <!-- ============================= -->
+            <!-- CUSTOMER INFORMATION -->
+            <!-- ============================= -->
+
+            <h4 class="mb-3">
+              Customer Information
+            </h4>
+
+
+            <p>
+
+              <strong>Name:</strong>
+
+              <%= order[0].first_name || "" %>
+
+                <%= order[0].last_name || "" %>
+
+            </p>
+
+
+            <p>
+
+              <strong>Email:</strong>
+
+              <%= order[0].email || "-" %>
+
+            </p>
+
+
+            <p>
+
+              <strong>Phone:</strong>
+
+              <%= order[0].phone || "-" %>
+
+            </p>
+
+
+            <p>
+
+              <strong>Address:</strong>
+
+              <%= order[0].address || "" %>,
+
+                <%= order[0].city || "" %>,
+
+                  <%= order[0].state || "" %>,
+
+                    <%= order[0].country || "India" %> -
+
+                      <%= order[0].zip_code || "" %>
+
+            </p>
+
+
+            <hr>
+
+
+            <!-- ============================= -->
+            <!-- PAYMENT BUTTON -->
+            <!-- ============================= -->
+
+            <div class="d-grid">
+
+              <button type="button" id="rzp-button1" class="btn btn-success btn-lg">
+
+                Pay ₹<%= Number(order[0].total_amount || 0).toFixed(2) %>
+
+              </button>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- MESSAGE -->
+            <!-- ============================= -->
+
+            <div id="payment-message" class="mt-4"></div>
+
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+
+    // ======================================================
+    // GET ELEMENTS
+    // ======================================================
+
+    const payButton =
+      document.getElementById("rzp-button1");
+
+    const messageBox =
+      document.getElementById("payment-message");
+
+
+    // ======================================================
+    // ORDER DATA FROM EJS
+    // ======================================================
+
+    const orderId =
+      "<%= order[0].order_id %>";
+
+    const totalAmount =
+      "<%= Number(order[0].total_amount || 0).toFixed(2) %>";
+
+    const customerName =
+      "<%= (order[0].first_name || '') + ' ' + (order[0].last_name || '') %>";
+
+    const customerEmail =
+      "<%= order[0].email || '' %>";
+
+    const customerPhone =
+      "<%= order[0].phone || '' %>";
+
+
+    // ======================================================
+    // SHOW MESSAGE
+    // ======================================================
+
+    function showMessage(message, type = "danger") {
+
+      messageBox.innerHTML =
+
+        '<div class="alert alert-' +
+        type +
+        '">' +
+        message +
+        '</div>';
+
+    }
+
+
+    // ======================================================
+    // PAY BUTTON CLICK
+    // ======================================================
+
+    payButton.addEventListener(
+      "click",
+      async function () {
+
+        payButton.disabled = true;
+
+        payButton.innerText =
+          "Creating Payment...";
+
+        messageBox.innerHTML = "";
+
+
+        try {
+
+
+          // ==================================================
+          // STEP 1
+          // CREATE RAZORPAY ORDER
+          // ==================================================
+
+          console.log(
+            "Creating payment for Order:",
+            orderId
+          );
+
+
+          const createResponse =
+            await fetch(
+              "/payment/create-payment/" + orderId,
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                }
+              }
+            );
+
+
+          // ==================================================
+          // GET RESPONSE AS TEXT FIRST
+          // ==================================================
+
+          const createText =
+            await createResponse.text();
+
+
+          console.log(
+            "Create Payment Response:",
+            createText
+          );
+
+
+          let createData;
+
+
+          try {
+
+            createData =
+              JSON.parse(createText);
+
+          }
+          catch (error) {
+
+            console.error(
+              "CREATE JSON ERROR:",
+              error
+            );
+
+            throw new Error(
+              "Server returned invalid response while creating payment."
+            );
+
+          }
+
+
+          // ==================================================
+          // CHECK CREATE RESPONSE
+          // ==================================================
+
+          if (
+            !createResponse.ok ||
+            !createData.success
+          ) {
+
+            throw new Error(
+              createData.message ||
+              "Unable to create Razorpay payment."
+            );
+
+          }
+
+
+          console.log(
+            "Razorpay Order Created:",
+            createData
+          );
+
+
+          // ==================================================
+          // CHECK RAZORPAY
+          // ==================================================
+
+          if (
+            typeof Razorpay === "undefined"
+          ) {
+
+            throw new Error(
+              "Razorpay checkout could not be loaded."
+            );
+
+          }
+
+
+          // ==================================================
+          // STEP 2
+          // RAZORPAY OPTIONS
+          // ==================================================
+
+          const options = {
+
+            key:
+              createData.key,
+
+            amount:
+              createData.amount,
+
+            currency:
+              createData.currency || "INR",
+
+            name:
+              "ElectroStore",
+
+            description:
+              "Order #" + orderId,
+
+            order_id:
+              createData.razorpay_order_id,
+
+
+            // ==========================================
+            // CUSTOMER
+            // ==========================================
+
+            prefill: {
+
+              name:
+                customerName.trim(),
+
+              email:
+                customerEmail,
+
+              contact:
+                customerPhone
+
+            },
+
+
+            // ==========================================
+            // NOTES
+            // ==========================================
+
+            notes: {
+
+              order_id:
+                String(orderId)
+
+            },
+
+
+            // ==========================================
+            // THEME
+            // ==========================================
+
+            theme: {
+
+              color:
+                "#0d6efd"
+
+            },
+
+
+            // ==========================================
+            // SUCCESS
+            // ==========================================
+
+            handler:
+              async function (response) {
+
+
+                console.log(
+                  "Razorpay Success:",
+                  response
+                );
+
+
+                payButton.innerText =
+                  "Verifying Payment...";
+
+
+                try {
+
+
+                  // ==================================
+                  // STEP 3
+                  // VERIFY PAYMENT
+                  // ==================================
+
+                  const verifyResponse =
+                    await fetch(
+                      "/payment/verify-payment/" +
+                      orderId,
+                      {
+                        method: "POST",
+
+                        headers: {
+                          "Content-Type":
+                            "application/json"
+                        },
+
+                        body:
+                          JSON.stringify({
+
+                            razorpay_payment_id:
+                              response.razorpay_payment_id,
+
+                            razorpay_order_id:
+                              response.razorpay_order_id,
+
+                            razorpay_signature:
+                              response.razorpay_signature
+
+                          })
+                      }
+                    );
+
+
+                  // ==================================
+                  // GET VERIFY RESPONSE
+                  // ==================================
+
+                  const verifyText =
+                    await verifyResponse.text();
+
+
+                  console.log(
+                    "Verify Response:",
+                    verifyText
+                  );
+
+
+                  let verifyData;
+
+
+                  try {
+
+                    verifyData =
+                      JSON.parse(
+                        verifyText
+                      );
+
+                  }
+                  catch (error) {
+
+                    console.error(
+                      "VERIFY JSON ERROR:",
+                      error
+                    );
+
+                    throw new Error(
+                      "Server returned invalid verification response."
+                    );
+
+                  }
+
+
+                  // ==================================
+                  // CHECK VERIFY RESPONSE
+                  // ==================================
+
+                  if (
+                    !verifyResponse.ok ||
+                    !verifyData.success
+                  ) {
+
+                    throw new Error(
+                      verifyData.message ||
+                      "Payment verification failed."
+                    );
+
+                  }
+
+
+                  // ==================================
+                  // SUCCESS MESSAGE
+                  // ==================================
+
+                  showMessage(
+                    "Payment Successful! Your order has been confirmed.",
+                    "success"
+                  );
+
+
+                  payButton.style.display =
+                    "none";
+
+
+                  // ==================================
+                  // REDIRECT IF BACKEND SENDS URL
+                  // ==================================
+
+                  if (
+                    verifyData.redirect
+                  ) {
+
+                    setTimeout(
+                      function () {
+
+                        window.location.href =
+                          verifyData.redirect;
+
+                      },
+                      1500
+                    );
+
+                  }
+
+
+                }
+                catch (error) {
+
+
+                  console.error(
+                    "VERIFY ERROR:",
+                    error
+                  );
+
+
+                  showMessage(
+                    error.message ||
+                    "Payment verification failed."
+                  );
+
+
+                  payButton.disabled =
+                    false;
+
+
+                  payButton.innerText =
+                    "Pay ₹" + totalAmount;
+
+                }
+
+              }
+
+          };
+
+
+          // ==================================================
+          // STEP 4
+          // CREATE RAZORPAY INSTANCE
+          // ==================================================
+
+          const razorpay =
+            new Razorpay(options);
+
+
+          // ==================================================
+          // PAYMENT FAILED
+          // ==================================================
+
+          razorpay.on(
+            "payment.failed",
+            async function (response) {
+
+
+              console.error(
+                "Payment Failed:",
+                response.error
+              );
+
+
+              showMessage(
+                response.error &&
+                  response.error.description
+                  ? response.error.description
+                  : "Payment failed."
+              );
+
+
+              // ==========================================
+              // UPDATE FAILED PAYMENT
+              // ==========================================
+
+              try {
+
+                await fetch(
+                  "/payment/payment-failed/" +
+                  orderId,
+                  {
+                    method: "POST",
+
+                    headers: {
+                      "Content-Type":
+                        "application/json"
+                    },
+
+                    body:
+                      JSON.stringify({
+
+                        order_id:
+                          orderId,
+
+                        error:
+                          response.error
+
+                      })
+
+                  }
+                );
+
+              }
+              catch (error) {
+
+                console.error(
+                  "Failed payment status update:",
+                  error
+                );
+
+              }
+
+
+              payButton.disabled =
+                false;
+
+
+              payButton.innerText =
+                "Pay ₹" + totalAmount;
+
+            }
+          );
+
+
+          // ==================================================
+          // MODAL CLOSED
+          // ==================================================
+
+          options.modal = {
+
+            ondismiss:
+              function () {
+
+                payButton.disabled =
+                  false;
+
+                payButton.innerText =
+                  "Pay ₹" + totalAmount;
+
+              }
+
+          };
+
+
+          // ==================================================
+          // OPEN RAZORPAY
+          // ==================================================
+
+          razorpay.open();
+
+
+        }
+        catch (error) {
+
+
+          console.error(
+            "PAYMENT ERROR:",
+            error
+          );
+
+
+          showMessage(
+            error.message ||
+            "Something went wrong while starting payment."
+          );
+
+
+          payButton.disabled =
+            false;
+
+
+          payButton.innerText =
+            "Pay ₹" + totalAmount;
+
+        }
+
+      });
+
+
+  </script>
+
+
+</body>
+
+</html>
+```

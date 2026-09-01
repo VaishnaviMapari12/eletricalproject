@@ -1,0 +1,232 @@
+
+
+
+
+
+<%- include('navbar') %>
+
+
+
+
+    <!-- Breadcrumbs -->
+    <section class="breadcrumb-section py-3 bg-light">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active">Contact Us</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2>Get in Touch</h2>
+                    <p class="lead text-muted">We're here to help! Reach out to us with any questions or concerns.</p>
+                </div>
+            </div>
+            
+            <div class="row g-5">
+                <!-- Contact Form -->
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-envelope me-2"></i>Send us a Message
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                        <div class="invalid-feedback">
+                                            Please provide your first name.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                        <div class="invalid-feedback">
+                                            Please provide your last name.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid email address.
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject *</label>
+                                    <select class="form-select" id="subject" required>
+                                        <option value="">Select a subject</option>
+                                        <option value="general">General Inquiry</option>
+                                        <option value="order">Order Support</option>
+                                        <option value="technical">Technical Support</option>
+                                        <option value="return">Returns & Refunds</option>
+                                        <option value="billing">Billing Question</option>
+                                        <option value="partnership">Partnership</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a subject.
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="orderNumber" class="form-label">Order Number (if applicable)</label>
+                                    <input type="text" class="form-control" id="orderNumber" placeholder="e.g., ES-2024-001">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" rows="5" required placeholder="Please describe your inquiry in detail..."></textarea>
+                                    <div class="invalid-feedback">
+                                        Please provide your message.
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="newsletter">
+                                    <label class="form-check-label" for="newsletter">
+                                        Subscribe to our newsletter for updates and exclusive offers
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-send me-2"></i>Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="col-lg-4">
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-info-circle me-2"></i>Contact Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="bi bi-geo-alt text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Address</h6>
+                                    <p class="text-muted mb-0">
+                                        123 Tech Street<br>
+                                       chatrapati sambahjinagar<br>
+                                        United States
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="bi bi-telephone text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Phone</h6>
+                                    <p class="text-muted mb-0">
+                                        <a href="tel:+15551234567" class="text-decoration-none">7020852250</a>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="bi bi-envelope text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Email</h6>
+                                    <p class="text-muted mb-0">
+                                        <a href="mailto:support@electrostore.com" class="text-decoration-none">vaish@1234</a>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-clock text-primary me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="mb-1">Business Hours</h6>
+                                    <p class="text-muted mb-0">
+                                        Monday - Friday: 9:00 AM - 6:00 PM<br>
+                                        Saturday: 10:00 AM - 4:00 PM<br>
+                                        Sunday: Closed
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Support -->
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-headset me-2"></i>Quick Support
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                              
+                                <a href="/refund" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>Returns & Refunds
+                                </a>
+                                <button class="btn btn-outline-primary" onclick="startLiveChat()">
+                                    <i class="bi bi-chat-dots me-2"></i>Live Chat
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+
+
+    <!-- Map Section -->
+<section class="map-section py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <h3>Find Us</h3>
+        <p class="text-muted">Visit our headquarters in Chatrapati Sambhajinagar</p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-0">
+            <!-- ✅ Real Google Map Embed -->
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3769.758582144267!2d75.31815331421458!3d19.876165986634895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bdb9815c0000001%3A0x2f37f0f3c1f9bb6a!2sChhatrapati%20Sambhajinagar%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1695370200000!5m2!1sen!2sin" 
+              width="100%" 
+              height="400" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer') %>

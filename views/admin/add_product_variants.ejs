@@ -1,0 +1,91 @@
+<%- include('navbar.ejs') %>
+
+<div class="container bg-white p-4 shadow-sm mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <h1>Add Product Variants for <%= product.product_name %></h1>
+        </div>
+    </div>
+
+   <form action="/admin/save_product_variants" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="product_id" value="<%= product.product_id %>">
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="variation_title" class="form-label">Variant Title</label>
+                <input type="text" name="variation_title" id="variation_title" class="form-control" placeholder="e.g. Red, 128GB" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="available_stock" class="form-label">Available Stock</label>
+                <input type="number" name="available_stock" id="available_stock" class="form-control" value="0" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="variation_market_price" class="form-label">Variation Market Price</label>
+                <input type="number" name="variation_market_price" id="variation_market_price" class="form-control" placeholder="e.g. 25000" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="variation_price" class="form-label">Variation Price</label>
+                <input type="number" name="variation_price" id="variation_price" class="form-control" placeholder="e.g. 23000" required>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <label for="image" class="form-label">Image</label>
+                <input type="file" name="image" id="image" class="form-control">
+            </div>
+
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Save Variant</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="container bg-white p-4 shadow-sm mt-4">
+    <div class="row">
+        <div class="col-12">
+           <h3>Existing Variants</h3>
+           <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Available Stock</th>
+                    <th>Market Price</th>
+                    <th>Price</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(variants.length > 0) { %>
+                    <% variants.forEach(function(variant) { %>
+                        <tr>
+                            <td><%= variant.product_variant_id %></td>
+                            <td><%= variant.variation_title %></td>
+                            <td><%= variant.available_stock %></td>
+                            <td><%= variant.variation_market_price %></td>
+                            <td><%= variant.variation_price %></td>
+                            <td>
+                                <% if(variant.image) { %>
+                                    <img src="/uploads/<%= variant.image %>" width="100">
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/admin/edit_product_variant/<%= product.product_id %>/<%= variant.product_variant_id %>" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="/admin/delete_product_variant/<%= product.product_id %>/<%= variant.product_variant_id %>" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7" class="text-center">No variants added yet.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+           </table>
+        </div>
+    </div>
+</div>

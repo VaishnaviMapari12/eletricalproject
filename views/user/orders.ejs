@@ -1,0 +1,134 @@
+<%- include('navbar') %>
+
+<section class="breadcrumb-section py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/profile">My Profile</a></li>
+                <li class="breadcrumb-item active">My Orders</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="my-orders-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>My Orders</h2>
+                    <div class="d-flex align-items-center gap-3">
+                        <select class="form-select" style="width: auto;">
+                            <option value="all">All Orders</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <% if(orders && orders.length > 0) { %>
+                        <% orders.forEach(function(order) { %>
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Order #<%= order.order_id %></h6>
+                                            <small class="text-muted">Placed on <%= order.order_date %></small>
+                                        </div>
+                                        <div class="text-end">
+                                            <% if(order.status === 'Delivered') { %>
+                                                <span class="badge bg-success"><%= order.status %></span>
+                                            <% } else { %>
+                                                <span class="badge bg-warning"><%= order.status %></span>
+                                            <% } %>
+                                            <div class="h6 mb-0 mt-1">&#8377; <%= order.total_amount %></div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <!-- Products List -->
+                                            <div class="col-md-8">
+                                                <% if(order.order_products && order.order_products.length > 0){ %>
+                                                    <% order.order_products.forEach(function(product){ %>
+                                                        <div class="d-flex align-items-center mb-3">
+                                                            <img src="/uploads/<%= product.product_main_image %>" 
+                                                                 class="cart-item-image me-3 img-fluid" 
+                                                                 alt="<%= product.product_name %>" 
+                                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                                            <div>
+                                                                <h6 class="mb-1"><%= product.product_name %></h6>
+                                                                <% if(product.variation_title) { %>
+                                                                    <small class="text-muted"><%= product.variation_title %></small>
+                                                                <% } %>
+                                                                <div class="text-primary">Qty: <%= product.quantity %></div>
+                                                            </div>
+                                                        </div>
+                                                    <% }); %>
+                                                <% } else { %>
+                                                    <p>No products found for this order.</p>
+                                                <% } %>
+                                            </div>
+
+                                            <!-- Buttons in separate boxes -->
+                                            <div class="col-md-4 text-end">
+                                                <% if(order.deliver_date){ %>
+                                                    <div class="mb-3">
+                                                        <small class="text-muted">Delivered on <%= order.deliver_date %></small>
+                                                    </div>
+                                                <% } %>
+
+                                                <!-- View Invoice Box -->
+                                                <div class="mb-3 p-3 border rounded shadow-sm">
+                                                    <a href="/profile/invoice/<%= order.order_id %>" class="btn btn-outline-primary w-100">
+                                                        <i class="bi bi-receipt me-1"></i>View Invoice
+                                                    </a>
+                                                </div>
+
+                                                <!-- Reorder Box -->
+                                                <div class="mb-3 p-3 border rounded shadow-sm">
+                                                    <button class="btn btn-outline-secondary w-100">
+                                                        <i class="bi bi-arrow-clockwise me-1"></i>Reorder
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p class="text-danger">No orders found.</p>
+                    <% } %>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Orders pagination" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('footer') %>

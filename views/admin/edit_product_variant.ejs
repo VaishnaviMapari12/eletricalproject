@@ -1,0 +1,50 @@
+<%- include('navbar.ejs') %>
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg p-4">
+            <h3 class="text-center mb-4">Edit Variant of <%= product.product_name %></h3>
+
+            <form action="/admin/update_product_variant/<%= product.product_id %>/<%= variant.product_variant_id %>" 
+                  method="POST" enctype="multipart/form-data">
+                
+                <div class="mb-3">
+                    <label class="form-label">Variation Title</label>
+                    <input type="text" name="variation_title" class="form-control" value="<%= variant.variation_title %>">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Available Stock</label>
+                    <input type="number" name="available_stock" class="form-control" value="<%= variant.available_stock %>">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Market Price</label>
+                    <input type="number" name="variation_market_price" class="form-control" value="<%= variant.variation_market_price %>">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Selling Price</label>
+                    <input type="number" name="variation_price" class="form-control" value="<%= variant.variation_price %>">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Variant Image</label>
+                    <input type="file" name="image" class="form-control">
+                    <% if (variant.image) { %>
+                        <div class="mt-2 text-center">
+                            <img src="/uploads/<%= variant.image %>" width="120" class="img-thumbnail">
+                            <input type="hidden" name="old_image" value="<%= variant.image %>">
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-success px-4">Update Variant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('footer.ejs') %>

@@ -1,0 +1,86 @@
+<%- include('navbar') %>
+
+<div class="container bg-white p-4 shadow-sm mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4 shadow-sm">
+                <h3 class="mb-4 text-center">Add New Slider</h3>
+
+                <form action="/admin/save_slider" method="post" enctype="multipart/form-data" class="row g-3">
+                    
+                    <div class="col-md-6">
+                        <label for="slider_image">Slider Image</label>
+                        <input type="file" id="slider_image" name="slider_image" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="slider_title">Slider Title</label>
+                        <input type="text" id="slider_title" name="slider_title" class="form-control" placeholder="Enter Slider Title" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="slider_description">Slider Description</label>
+                        <textarea id="slider_description" name="slider_description" class="form-control" placeholder="Enter Slider Description" required></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="slider_button_text">Button Text</label>
+                        <input type="text" id="slider_button_text" name="slider_button_text" class="form-control" placeholder="Enter Button Text" required>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label for="slider_button_link">Button Link</label>
+                        <input type="text" id="slider_button_link" name="slider_button_link" class="form-control" placeholder="Enter Button Link" required>
+                    </div>
+
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-primary px-4">Save Slider</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sliders List -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card p-4 shadow-sm">
+                <h3 class="mb-4 text-center">Sliders List</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Button Text</th>
+                                <th>Button Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% sliders.forEach(slider => { %>
+                                <tr>
+                                    <td>
+                                        <% if(slider.slider_image) { %>
+                                            <img src="/uploads/<%= slider.slider_image %>" class="img-fluid rounded" style="max-width:150px; height:auto;">
+                                        <% } else { %>
+                                            No Image
+                                        <% } %>
+                                    </td>
+                                    <td><%= slider.slider_title %></td>
+                                    <td><%= slider.slider_description %></td>
+                                    <td><%= slider.slider_button_text %></td>
+                                    <td><%= slider.slider_button_link %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer') %>

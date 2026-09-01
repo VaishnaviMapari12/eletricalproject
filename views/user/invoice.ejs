@@ -1,0 +1,162 @@
+<%- include('navbar') %>
+
+<section class="breadcrumb-section py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/orders">My Orders</a></li>
+                <li class="breadcrumb-item active">Invoice</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="invoice-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="invoice p-4 border rounded">
+
+                    <!-- Header -->
+                    <div class="invoice-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="invoice-logo">ElectroStore</div>
+                            <p class="text-muted mb-0">Premium Electronics & Gadgets</p>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="mb-1">INVOICE</h4>
+                            <p class="text-muted mb-0">#<%= order.order_id || 'N/A' %></p>
+                        </div>
+                    </div>
+
+                    <!-- Billing & Invoice Info -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Bill To:</h6>
+                            <address class="mb-0">
+                                <strong><%= user.first_name %> <%= user.last_name %></strong><br>
+                                <%= user.address %><br>
+                                <%= user.city %>, <%= user.state %> <%= user.zip %><br>
+                                <%= user.country %><br>
+                                <strong>Email:</strong> <%= user.email %><br>
+                                <strong>Phone:</strong> <%= user.phone %>
+                            </address>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Invoice Details:</h6>
+                            <p class="mb-1"><strong>Invoice Date:</strong> 
+                                <%= order.order_date ? new Date(order.order_date).toISOString().split('T')[0] : 'N/A' %>
+                            </p>
+                            <p class="mb-1"><strong>Payment Method:</strong> <%= order.payment_method || 'online' %></p>
+                            <p class="mb-1"><strong>Order Status:</strong> 
+                                <span class="badge <%= order.status === 'Delivered' ? 'bg-success' : 'bg-warning' %>">
+                                    <%= order.status || 'Pending' %>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="table-responsive mt-4">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Description</th>
+                                    <th>Qty</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (orderProducts.length > 0) { %>
+                                    <% orderProducts.forEach(op => { %>
+                                        <tr>
+                                            <td>
+                                                <img src="/uploads/<%= op.product_image || 'placeholder.png' %>" 
+                                                     style="width:60px;height:60px;object-fit:cover;">
+                                            </td>
+                                            <td>
+                                                <strong><%= op.product_name || 'Product' %></strong><br>
+                                                <small class="text-muted"><%= op.variation_title || '-' %></small>
+                                            </td>
+                                            <td><%= op.quantity || 0 %></td>
+                                            <td>₹<%= (op.unit_price || 0).toLocaleString('en-IN') %></td>
+                                            <td>₹<%= ((op.unit_price || 0) * (op.quantity || 0)).toLocaleString('en-IN') %></td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No products found for this order.</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Shipping & Totals -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Shipping Address:</h6>
+                            <address>
+                                <%= user.address %><br>
+                                <%= user.city %>, <%= user.state %> <%= user.zip %><br>
+                                <%= user.country %>
+                            </address>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Subtotal:</strong></td>
+                                        <td class="text-end">₹<%= order.subtotal.toLocaleString('en-IN') %></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Shipping:</strong></td>
+                                        <td class="text-end text-success">₹<%= order.shipping_cost.toLocaleString('en-IN') %></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Tax:</strong></td>
+                                        <td class="text-end">₹<%= order.tax.toLocaleString('en-IN') %></td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td><strong>Total:</strong></td>
+                                        <td class="text-end"><strong>₹<%= order.total.toLocaleString('en-IN') %></strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payment & Thank you -->
+                    <div class="mt-5 pt-4 border-top">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Payment Information:</h6>
+                                <p><strong>Payment Method:</strong> <%= order.payment_method || 'online' %></p>
+                                <p><strong>Transaction ID:</strong> <%= order.transaction_id || 'online' %></p>
+                                <p><strong>Payment Date:</strong> 
+                                    <%= order.payment_date ? new Date(order.payment_date).toISOString().split('T')[0] : 'N/A' %>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Thank you for your business!</h6>
+                                <p class="text-muted">If you have any questions about this invoice, contact customer service.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary me-2" onclick="window.print()">Print Invoice</button>
+                        <a href="/orders" class="btn btn-outline-secondary">Back to Orders</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('footer') %>

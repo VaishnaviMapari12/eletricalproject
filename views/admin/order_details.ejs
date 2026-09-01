@@ -1,0 +1,95 @@
+<%- include('navbar.ejs') %>
+
+<div class="container mt-4">
+    <h1>Order Details</h1>
+    <p>View and manage your order details below.</p>
+
+    <div class="row mt-4">
+        <!-- Left Column: Order Info -->
+        <div class="col-md-6">
+            <h3>Order Information</h3>
+            <p><strong>Order ID:</strong> <%= order.order_id %></p>
+            <p><strong>User ID:</strong> <%= order.user_id %></p>
+            <p><strong>First Name:</strong> <%= order.first_name %></p>
+            <p><strong>Last Name:</strong> <%= order.last_name %></p>
+            <p><strong>Email:</strong> <%= order.email %></p>
+            <p><strong>Phone:</strong> <%= order.phone %></p>
+            <p><strong>Address:</strong> <%= order.address %></p>
+            <p><strong>City:</strong> <%= order.city %></p>
+            <p><strong>State:</strong> <%= order.state %></p>
+            <p><strong>ZIP Code:</strong> <%= order.zip_code %></p>
+            <p><strong>Payment Method:</strong> <%= order.payment %></p>
+            <p><strong>Transaction ID:</strong> <%= order.transaction_id || 'N/A' %></p>
+            <p><strong>Notes:</strong> <%= order.notes || 'N/A' %></p>
+            <p><strong>Total Amount:</strong> ₹<%= order.total_amount.toLocaleString('en-IN') %></p>
+            <p><strong>Order Date:</strong> <%= order.order_date.toISOString().split('T')[0] %></p>
+            <p><strong>Dispatch Date:</strong> <%= order.dispatch_date ? order.dispatch_date.toISOString().split('T')[0] : 'N/A' %></p>
+            <p><strong>Delivery Date:</strong> <%= order.deliver_date ? order.deliver_date.toISOString().split('T')[0] : 'N/A' %></p>
+            <p><strong>Cancel Date:</strong> <%= order.cancel_date ? order.cancel_date.toISOString().split('T')[0] : 'N/A' %></p>
+            <p><strong>Order Status:</strong> <%= order.order_status %></p>
+            <p><strong>Payment Status:</strong> <%= order.payment_status %></p>
+        </div>
+
+        <!-- Right Column: Products -->
+        <div class="col-md-6">
+            <h3>Products in this Order</h3>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Variant</th>
+                        <th>Quantity</th>
+                        <th>Price (₹)</th>
+                        <th>Total Price (₹)</th>
+                        <th>Color</th>
+                        <th>Market Price (₹)</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orderItems.forEach(item => { %>
+                        <tr>
+                            <td><%= item.product_name %></td>
+                            <td><%= item.variation_title || 'N/A' %></td>
+                            <td><%= item.quantity %></td>
+                            <td>₹<%= item.price.toLocaleString('en-IN') %></td>
+                            <td>₹<%= item.total_price.toLocaleString('en-IN') %></td>
+                            <td><%= item.product_color || 'N/A' %></td>
+                            <td>₹<%= item.market_price ? item.market_price.toLocaleString('en-IN') : 'N/A' %></td>
+                            <td>
+                                <% if(item.product_image){ %>
+                                    <img src="/uploads/<%= item.product_image %>" alt="Product Image" width="60">
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Order Status Buttons -->
+   <div class="row mt-3">
+    <div class="col-md-12 text-center">
+        <% if(order.order_status === 'Pending') { %>
+            <a href="/admin/dispatch/<%= order.order_id %>" class="btn btn-danger">Dispatch Order</a>
+        <% } %>
+
+        <% if(order.order_status === 'Dispatched') { %>
+            <a href="/admin/deliver/<%= order.order_id %>" class="btn btn-primary">Deliver Order</a>
+        <% } %>
+
+        <% if(order.order_status === 'Delivered') { %>
+            <a href="/admin/cancel/<%= order.order_id %>" class="btn btn-warning">Cancel Order</a>
+        <% } %>
+
+        <% if(order.order_status === 'return' || order.order_status === 'Canceled' || order.order_status === 'complite') { %>
+            <a href="/admin/restore/<%= order.order_id %>" class="btn btn-success">Restore Order</a>
+        <% } %>
+    </div>
+</div>
+
+</div>
+<%- include('footer') %>

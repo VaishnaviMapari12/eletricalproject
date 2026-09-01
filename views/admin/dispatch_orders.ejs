@@ -1,0 +1,40 @@
+<%- include('navbar.ejs') %>
+
+<h1 class="text-center my-4">Dispatched Orders</h1>
+
+<div class="container">
+  <table class="table table-bordered table-hover text-center">
+    <thead class="table-dark">
+      <tr>
+        <th>Order ID</th>
+        <th>Dispatch Date</th>
+        <th>Address</th>
+        <th>Total Amount</th>
+        <th>Order Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (orders.length === 0) { %>
+        <tr>
+          <td colspan="6">No dispatched orders found.</td>
+        </tr>
+      <% } else { %>
+        <% orders.forEach(order => { %>
+          <tr>
+            <td><%= order.order_id %></td>
+            <td><%= order.dispatch_date ? order.dispatch_date.toISOString().split('T')[0] : 'N/A' %></td>
+            <td><%= order.address %></td>
+            <td>₹<%= order.total_amount.toLocaleString('en-IN') %></td>
+            <td><%= order.order_status %></td>
+            <td>
+              <a href="/admin/order_details/<%= order.order_id %>" class="btn btn-info btn-sm">Details</a>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('footer.ejs') %>

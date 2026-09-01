@@ -1,0 +1,40 @@
+<%- include('navbar') %>
+
+<div class="container mt-4">
+    <h1 class="text-center my-4">Returned Orders</h1>
+
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Address</th>
+                <th>Total Amount</th>
+                <th>Order Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (orders.length === 0) { %>
+                <tr>
+                    <td colspan="6">No returned orders found.</td>
+                </tr>
+            <% } else { %>
+                <% orders.forEach(order => { %>
+                    <tr>
+                        <td><%= order.order_id %></td>
+                        <td><%= order.first_name %> <%= order.last_name %></td>
+                        <td><%= order.address %>, <%= order.city %>, <%= order.state %>, <%= order.zip_code %></td>
+                        <td>₹<%= order.total_amount.toLocaleString('en-IN') %></td>
+                        <td><%= order.order_status %></td>
+                        <td>
+                            <a href="/admin/order_details/<%= order.order_id %>" class="btn btn-info btn-sm">Details</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('footer') %>

@@ -1,0 +1,220 @@
+<%- include('navbar') %>
+
+<!-- Breadcrumbs -->
+<section class="breadcrumb-section py-3 bg-light">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/products">Products</a></li>
+        <li class="breadcrumb-item"><a href="/products?category=smartphones">Smartphones</a></li>
+        <li class="breadcrumb-item active"><%= product[0].product_name %></li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Product Details -->
+<section class="product-details-section py-5">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Product Gallery (Left) -->
+      <div class="col-lg-6 order-lg-1">
+        <div class="sticky-top" style="top:100px;">
+          <img id="main_image" src="/uploads/<%= product[0].product_main_image %>" class="img-fluid rounded shadow-sm w-100 mb-3" alt="<%= product[0].product_name %>">
+          <div class="row g-2">
+            <% if (images.length > 0) { %>
+              <% images.slice(0,4).forEach((img, index) => { %>
+                <div class="col-3">
+                  <img src="/uploads/<%= img.image_path %>" 
+                       class="img-fluid thumbnail rounded <%= (index===0 ? 'active' : '') %>" 
+                       alt="<%= product[0].product_name %>"
+                       onclick="changeMainImage(this)">
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="col-3">
+                <img src="/uploads/<%= product[0].product_main_image %>" class="img-fluid thumbnail active" onclick="changeMainImage(this)">
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info (Right) -->
+      <div class="col-lg-6 order-lg-2">
+        <div class="product-info">
+          <h1 class="h2 mb-3"><%= product[0].product_name %></h1>
+
+          <!-- Price -->
+          <% if(selected_variant) { %>
+            <div class="product-price mb-4">
+              <span class="current-price h3">₹<%= selected_variant.variation_market_price.toLocaleString('en-IN') %></span>
+              <% if(selected_variant.variation_old_price) { %>
+                <span class="old-price ms-2">₹<%= selected_variant.variation_old_price.toLocaleString('en-IN') %></span>
+                <span class="badge bg-success ms-2">
+                  Save ₹<%= (selected_variant.variation_old_price - selected_variant.variation_market_price).toLocaleString('en-IN') %>
+                </span>
+              <% } %>
+            </div>
+          <% } %>
+
+          <!-- Stock -->
+          <div class="mb-4">
+            <% if(selected_variant) { %>
+              <span class="stock-badge bg-success text-white">
+                Only <%= selected_variant.available_stock %> left in stock
+              </span>
+            <% } %>
+            <span class="text-muted ms-2">Usually ships within 1-2 business days</span>
+          </div>
+
+          <!-- Variations -->
+          <% if (product_variants.length > 0) { %>
+            <div class="mb-4">
+              <h6 class="mb-2">Variations</h6>
+              <div class="d-flex flex-wrap">
+                <% product_variants.forEach(function(variant) { %>
+                  <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= variant.product_variant_id %>">
+                    <button class="btn btn-outline-primary me-2 mb-2 <%= (selected_variant && selected_variant.product_variant_id === variant.product_variant_id) ? 'active' : '' %>">
+                      <%= variant.variation_title %>
+                    </button>
+                  </a>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Colors -->
+          <% if (product[0].product_colors) { %>
+            <div class="mb-4">
+              <h6 class="mb-2">Color</h6>
+              <div class="d-flex flex-wrap">
+                <% var colors = product[0].product_colors.split(","); %>
+                <input type="hidden" id="color_box" value="<%= color || colors[0].trim() %>">
+                <% colors.forEach((c,i) => { 
+                     let thisColor = c.trim(); %>
+                  <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= selected_variant ? selected_variant.product_variant_id : '' %>&color=<%= thisColor %>">
+                    <button class="btn me-2 mb-2 <%= ((!color && i===0) || color === thisColor) ? 'active-color' : 'btn-outline-secondary' %>">
+                      <div class="d-flex align-items-center">
+                        <div style="background-color:<%= thisColor %>; width:20px; height:20px; border-radius:50%; border:1px solid #ccc;" class="me-2"></div>
+                        <%= thisColor %>
+                      </div>
+                    </button>
+                  </a>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Quantity -->
+          <div class="mb-4">
+            <h6 class="mb-2">Quantity</h6>
+            <div class="d-inline-flex">
+              <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
+              <input type="number" id="quantity_box_hidden" min="1" max="10" class="form-control text-center mx-2" value="<%= cart.length > 0 ? cart[0].quantity : 1 %>" style="width:80px;">
+              <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
+            </div>
+          </div>
+
+          <!-- Add to Cart / Already in Cart / Login -->
+          <div class="d-grid gap-3 mb-4">
+            <% if (user) { %>
+              <% if (cart.length > 0) { %>
+                <button type="button" class="btn btn-primary btn-lg w-100" onclick="updateCartQty()">
+                  <i class="bi bi-cart-check me-2"></i> Already in Cart (Update Qty)
+                </button>
+              <% } else { %>
+                <button type="button" class="btn btn-primary btn-lg w-100" onclick="addToCart()">
+                  <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                </button>
+              <% } %>
+            <% } else { %>
+              <button type="button" class="btn btn-outline-primary btn-lg w-100" onclick="redirectToLogin()">
+                <i class="bi bi-lightning me-2"></i> Add to Cart
+              </button>
+            <% } %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>
+
+<style>
+.active-color {
+  background-color: skyblue !important;
+  color: white;
+  border: 1px solid skyblue;
+}
+</style>
+
+<script>
+function changeMainImage(img) {
+  document.getElementById('main_image').src = img.src;
+  document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+  img.classList.add('active');
+}
+
+function increaseQty() {
+  let input = document.getElementById("quantity_box_hidden");
+  let val = parseInt(input.value) || 1;
+  if (val < 10) {
+    input.value = val + 1;
+    autoUpdateCart();
+  }
+}
+
+function decreaseQty() {
+  let input = document.getElementById("quantity_box_hidden");
+  let val = parseInt(input.value) || 1;
+  if (val > 1) {
+    input.value = val - 1;
+    autoUpdateCart();
+  }
+}
+
+function autoUpdateCart() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= selected_variant ? selected_variant.product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  <% if(user){ %>
+    fetch(`/update_cart/${product_id}/${variant_id}/${color}/${quantity}`)
+      .then(res => res.json())
+      .then(data => console.log('Cart updated', data))
+      .catch(err => console.error(err));
+  <% } %>
+}
+
+function addToCart() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= selected_variant ? selected_variant.product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  if (!variant_id) return alert("Please select a variant");
+  if (!color) return alert("Please select a color");
+
+  window.location.href = `/add_to_cart/${product_id}/${variant_id}/${color}/${quantity}`;
+}
+
+function updateCartQty() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= selected_variant ? selected_variant.product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  window.location.href = `/update_cart/${product_id}/${variant_id}/${color}/${quantity}`;
+}
+
+function redirectToLogin() {
+  let currentUrl = window.location.pathname + window.location.search;
+  window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+}
+</script>

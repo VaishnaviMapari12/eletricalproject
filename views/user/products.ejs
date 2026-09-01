@@ -1,0 +1,102 @@
+<%- include('navbar.ejs') %>
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section py-3 bg-light">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active">Products</li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section py-5">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar Filters -->
+      <div class="col-lg-3">
+        <form action="/products" method="GET">
+          <% if (categories.length > 0) { %>
+            <div class="filter-card mb-4 p-3 border rounded">
+              <h5 class="filter-title mb-3">Categories</h5>
+              <% categories.forEach(cat => { %>
+                <div class="form-check d-flex align-items-center mb-2">
+                  <input 
+                    class="form-check-input me-2" 
+                    type="radio" 
+                    name="category_id" 
+                    value="<%= cat.category_id %>" 
+                    id="cat-<%= cat.category_id %>"
+                    onchange="this.form.submit()"
+                    <%= (selectedCategory == cat.category_id) ? 'checked' : '' %>
+                  >
+                  <% if (cat.category_image) { %>
+                  <img 
+                    src="/uploads/<%= cat.category_image %>" 
+                    alt="<%= cat.category_name %>" 
+                    class="me-2"
+                    style="width:35px; height:35px; object-fit:cover; border-radius:5px;"
+                  >
+                  <% } %>
+                  <label class="form-check-label" for="cat-<%= cat.category_id %>"><%= cat.category_name %></label>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </form>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="col-lg-9">
+        <h2 class="mb-3">All Products</h2>
+        <p class="text-muted">Showing <%= products.length %> products</p>
+
+        <div class="row g-4">
+          <% if (products.length > 0) { %>
+            <% products.forEach(prod => { %>
+              <div class="col-lg-4 col-md-6">
+                <div class="product-card border p-3 h-100 d-flex flex-column">
+                  <a href="/product_details/<%= prod.product_id %>/<%= prod.product_variant_id || 0 %>">
+                  <img src="/uploads/<%= prod.variant_image || prod.product_main_image %>" alt="<%= prod.product_name %>" class="img-fluid mb-3">
+
+                  </a>
+                  <h5 class="mb-1"><%= prod.product_name %></h5>
+                  <p class="text-muted mb-2"><%= prod.category_name %></p>
+                  <div class="product-price mb-3">
+                    <span class="current-price fw-bold">₹<%= prod.variation_price || 'N/A' %></span>
+                    <% if (prod.variation_market_price) { %>
+                      <span class="old-price text-muted text-decoration-line-through ms-2">₹<%= prod.variation_market_price %></span>
+                    <% } %>
+                  </div>
+                  <div class="mt-auto d-flex gap-2">
+                    <% if (req.session.user_id) { %>
+                      <a href="/add_to_cart/<%= prod.product_id %>/<%= prod.product_variant_id || 0 %>/Default/1" class="btn btn-primary flex-fill">
+                        <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                      </a>
+                    <% } else { %>
+                      <a href="/login?redirect=/product_details/<%= prod.product_id %>" class="btn btn-outline-primary flex-fill">
+                        <i class="bi bi-lightning me-2"></i>Add to Cart
+                      </a>
+                    <% } %>
+                    <button class="btn btn-outline-danger flex-fill">
+                      <i class="bi bi-heart"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-muted">No products found.</p>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>

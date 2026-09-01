@@ -1,0 +1,39 @@
+<%- include('navbar.ejs') %>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="col-md-6">
+    <div class="card shadow-lg p-4">
+      <h2 class="text-center mb-4">Edit Category</h2>
+      
+      <form action="/admin/update_category/<%= category.category_id %>" method="POST" enctype="multipart/form-data">
+        
+        <div class="mb-3">
+          <label class="form-label">Category Name</label>
+          <input type="text" name="category_name" value="<%= category.category_name %>" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Category Image</label>
+          <input type="file" name="category_image" class="form-control">
+          <% if (category.category_image) { %>
+            <img src="/uploads/<%= category.category_image %>" width="120" height="120" class="mt-2 rounded">
+          <% } %>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select name="category_status" class="form-select">
+            <option value="active" <%= category.category_status === "active" ? "selected" : "" %>>Active</option>
+            <option value="inactive" <%= category.category_status === "inactive" ? "selected" : "" %>>Inactive</option>
+          </select>
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-success px-4">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('footer.ejs') %>

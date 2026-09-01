@@ -1,0 +1,324 @@
+<%- include('navbar') %>
+
+<div class="container-fluid py-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1 text-dark">admin</h2>
+      <p class="text-muted mb-0">Track your daily progress and project metrics</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" onclick="updateChartData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="fas fa-calendar"></i> Last 7 Days
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#" onclick="changePeriod('7')">Last 7 Days</a></li>
+          <li><a class="dropdown-item" href="#" onclick="changePeriod('30')">Last 30 Days</a></li>
+          <li><a class="dropdown-item" href="#" onclick="changePeriod('90')">Last 3 Months</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Total Hours</div>
+              <div class="h4 mb-0 text-primary">156</div>
+            </div>
+            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+              <i class="fas fa-clock text-primary"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">order done</div>
+              <div class="h4 mb-0 text-success">2</div>
+            </div>
+            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+              <i class="fas fa-check-circle text-success"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Projects Active</div>
+              <div class="h4 mb-0 text-warning">4</div>
+            </div>
+            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+              <i class="fas fa-project-diagram text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">working efficiency</div>
+              <div class="h4 mb-0 text-info">87%</div>
+            </div>
+            <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+              <i class="fas fa-chart-line text-info"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Chart Section -->
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">Daily Work Progress</h5>
+              <small class="text-muted">Hours worked per day over the last week</small>
+            </div>
+            <div class="d-flex gap-2">
+              <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                <i class="fas fa-chart-bar me-1"></i> Bar Chart
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container" style="position: relative; height: 400px;">
+            <canvas id="dailyWorkChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0">Today's Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">Hours Today</span>
+              <span class="fw-bold text-primary">8.5h</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-primary" role="progressbar" style="width: 85%"></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">Tasks Done</span>
+              <span class="fw-bold text-success">6/8</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">Focus Score</span>
+              <span class="fw-bold text-info">92%</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-info" role="progressbar" style="width: 92%"></div>
+            </div>
+          </div>
+
+          <hr>
+          <div class="text-center">
+            <div class="text-muted small mb-2">Productivity Streak</div>
+            <div class="h3 text-warning mb-0">10 Days</div>
+            <div class="text-muted small">Keep it up! 🔥</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row g-3 mt-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0">Quick Actions</h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <a href="/admin/category" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-layer-group"></i>
+                Manage Categories
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/admin/products" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-plus"></i>
+                Add Product
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/admin/products_list" class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-list"></i>
+                View Products
+              </a>
+            </div>
+            <div class="col-md-3">
+              <a href="/admin/silder" class="btn btn-outline-info w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="fas fa-images"></i>
+                Manage Slider
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+const ctx = document.getElementById('dailyWorkChart').getContext('2d');
+
+// ✅ Short form days
+const chartData = {
+  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  datasets: [{
+    label: 'Hours Worked',
+    data: [8.5, 7.2, 9.1, 6.8, 8.0, 4.5, ],
+    backgroundColor: [
+      'rgba(13, 110, 253, 0.8)',
+      'rgba(25, 135, 84, 0.8)',
+      'rgba(255, 193, 7, 0.8)',
+      'rgba(220, 53, 69, 0.8)',
+      'rgba(13, 202, 240, 0.8)',
+      'rgba(108, 117, 125, 0.8)',
+      'rgba(111, 66, 193, 0.8)'
+    ],
+    borderColor: [
+      'rgba(13, 110, 253, 1)',
+      'rgba(25, 135, 84, 1)',
+      'rgba(255, 193, 7, 1)',
+      'rgba(220, 53, 69, 1)',
+      'rgba(13, 202, 240, 1)',
+      'rgba(108, 117, 125, 1)',
+      'rgba(111, 66, 193, 1)'
+    ],
+    borderWidth: 2,
+    borderRadius: 8,
+    borderSkipped: false,
+  }]
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      titleColor: '#fff',
+      bodyColor: '#fff',
+      borderColor: 'rgba(255, 255, 255, 0.1)',
+      borderWidth: 1,
+      cornerRadius: 8,
+      displayColors: false,
+      callbacks: {
+        title: function(context) {
+          return context[0].label;
+        },
+        label: function(context) {
+          return `${context.parsed.y} hours worked`;
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: {
+        color: '#6c757d',
+        font: { size: 12, weight: '500' }
+      }
+    },
+    y: {
+      beginAtZero: true,
+      max: 10,
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+        drawBorder: false
+      },
+      ticks: {
+        color: '#6c757d',
+        font: { size: 12 },
+        callback: function(value) { return value + 'h'; }
+      }
+    }
+  },
+  animation: {
+    duration: 2000,
+    easing: 'easeInOutQuart'
+  }
+};
+
+const dailyWorkChart = new Chart(ctx, {
+  type: 'bar',
+  data: chartData,
+  options: chartOptions
+});
+
+// Update chart data function
+function updateChartData() {
+  const newData = chartData.datasets[0].data.map(() =>
+    Math.floor(Math.random() * 8) + 2
+  );
+  dailyWorkChart.data.datasets[0].data = newData;
+  dailyWorkChart.update('active');
+}
+
+function changePeriod(days) {
+  console.log(`Changed period to ${days} days`);
+}
+
+// Hover effects
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.transition = 'transform 0.2s ease';
+    });
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+});
+</script>
+
+<%- include('footer') %>

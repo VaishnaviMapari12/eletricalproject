@@ -1,0 +1,1543 @@
+<!-- <%- include('navbar') %>
+
+<!-- Breadcrumbs -->
+<section class="breadcrumb-section py-3 bg-light">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/products">Products</a></li>
+        <li class="breadcrumb-item"><a href="/products?category=smartphones">Smartphones</a></li>
+        <li class="breadcrumb-item active"><%= product[0].product_name %></li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Product Details -->
+<section class="product-details-section py-5">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Product Gallery (Left) -->
+      <div class="col-lg-6 order-lg-1">
+        <div class="product-gallery sticky-top">
+          <img src="/uploads/<%= product[0].product_main_image %>" class="img-fluid main-image" alt="<%= product[0].product_name %>">
+          <div class="row g-2 mt-3">
+            <% images.forEach((img, index) => { %>
+              <div class="col-3">
+                <img src="/uploads/<%= img.image_path %>" class="img-fluid thumbnail <%= index === 0 ? 'active' : '' %>" alt="<%= product[0].product_name %>">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info (Right) -->
+      <div class="col-lg-6 order-lg-2">
+        <div class="product-info">
+          <h1 class="h2 mb-3"><%= product[0].product_name %></h1>
+
+          <!-- Price -->
+          <% if(product_variant.length) { %>
+            <div class="product-price mb-4">
+              <span class="current-price h3">₹<%= product_variant[0].variation_market_price.toLocaleString('en-IN') %></span>
+              <span class="old-price ms-2">₹<%= (product_variant[0].variation_old_price || 0).toLocaleString('en-IN') %></span>
+              <span class="badge bg-success ms-2">
+                Save ₹<%= (product_variant[0].variation_market_price - (product_variant[0].variation_old_price || 0)).toLocaleString('en-IN') %>
+              </span>
+            </div>
+          <% } %>
+
+          <!-- Stock -->
+          <div class="mb-4">
+            <% if(product_variant.length) { %>
+              <span class="stock-badge bg-success text-white">
+                Only <%= product_variant[0].available_stock %> left in stock
+              </span>
+            <% } %>
+            <span class="text-muted ms-2">Usually ships within 1-2 business days</span>
+          </div>
+
+          <!-- Variations -->
+          <div class="mb-4">
+            <h6 class="mb-2">Variation</h6>
+            <div class="variation-group d-flex flex-wrap">
+              <% for (var i = 0; i < product_variants.length; i++) { %>
+                <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= product_variants[i].product_variant_id %>">
+                  <button 
+                    id="variant_box"
+                    class="variation-option <%= (product_variant.length && product_variant[0].product_variant_id === product_variants[i].product_variant_id) ? 'active' : '' %>">
+                    <%= product_variants[i].variation_title %>
+                  </button>
+                </a>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Color -->
+          <div class="mb-4">
+            <h6 class="mb-2">Color</h6>
+            <div class="variation-group d-flex flex-wrap">
+              <% if (product[0].product_colors) { %>
+                <% var colors = product[0].product_colors.split(","); %>
+                <input type="hidden" id="color_box" value="<%- req.query.color|| colors[0] %>">
+
+                <% for (var i = 0; i < colors.length; i++) { %>
+                  <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= product_variants[i].product_variant_id %>&color=<%= colors[i].trim() %>">
+
+                  <button 
+                    type="button"
+                    class="variation-option <%= req.query.colors[i] ? 'active' : '' %>" 
+                    onclick="setColor('<%- colors[i].trim() %>', this)">
+                    <div class="d-flex align-items-center">
+                      <div class="color-switch me-2" style="background-color: <%= colors[i].trim() %>; width: 20px; height: 20px; border-radius: 50%;"></div>
+                      <%= colors[i].trim() %>
+                    </div>
+                  </button>
+                  </a>
+                <% } %>
+              <% } else { %>
+                <p>No colors available</p>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="mb-4">
+            <h6 class="mb-2">Quantity</h6>
+            <div class="quantity-stepper d-inline-flex">
+              <button type="button" onclick="decreaseQty()" class="btn btn-outline-secondary">-</button>
+              <input type="number" id="quantity_box_hidden" min="1" max="10" class="form-control text-center" value="<%-(cart.legth>0) ? cart[0].quantity || 1 %>" style="width:70px;">
+              <button type="button" onclick="increaseQty()" class="btn btn-outline-secondary">+</button>
+            </div>
+          </div>
+
+          <!-- Add to Cart -->
+          <!-- Add to Cart -->
+                   <div class="d-grid gap-3 mb-4">
+  <% if (req.session.user_id) { %>
+    <% if (cart.length > 0) { %>
+      <button type="button" class="btn btn-primary btn-lg w-100" disabled>
+        <i class="bi bi-cart-check me-2"></i> Already in Cart
+      </button>
+    <% } else { %>
+      <button type="button" class="btn btn-primary btn-lg w-100" onclick="addToCart()">
+        <i class="bi bi-cart-plus me-2"></i> Add to Cart
+      </button>
+    <% } %>
+  <% } else { %>
+    <a href="/login?redirect=/product_details/<%= product[0].product_id %>" 
+      class="btn btn-outline-primary btn-lg w-100 text-center">
+      <i class="bi bi-lightning me-2"></i> Add to Cart
+    </a>
+  <% } %>
+</div>
+
+
+
+          <!-- Wishlist -->
+          <button class="btn btn-outline-secondary" onclick="toggleWishlist()">
+            <i class="bi bi-heart me-2"></i>Add to Wishlist
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>
+
+
+<script>
+function setColor(color, button) {
+  document.getElementById("color_box").value = color;
+  document.querySelectorAll(".variation-option").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  button.classList.add("active");
+}
+
+function addToCart() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= product_variant.length ? product_variant[0].product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  if (!variant_id) {
+    alert("Please select a variant");
+    return;
+  }
+  if (!color) {
+    alert("Please select a color");
+    return;
+  }
+
+  // Redirect to backend
+  window.location.href = `/add_to_cart/${product_id}/${variant_id}/${color}/${quantity}`;
+}
+
+function increaseQty() {
+  let qtyInput = document.getElementById("quantity_box_hidden");
+  let current = parseInt(qtyInput.value) || 1;
+  if (current < 10) qtyInput.value = current + 1;
+}
+
+function decreaseQty() {
+  let qtyInput = document.getElementById("quantity_box_hidden");
+  let current = parseInt(qtyInput.value) || 1;
+  if (current > 1) qtyInput.value = current - 1;
+}
+</script> -->
+// var express = require("express");
+// var router = express.Router();
+// var exe = require("../conn"); // MySQL query function
+
+// // ================== Homepage ==================
+// router.get("/", async (req, res) => {
+//   const sliders = await exe("SELECT * FROM slider") || [];
+//   const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+//   const most_selling_products = await exe(`
+//     SELECT p.*, v.*
+//     FROM products p
+//     LEFT JOIN product_variants v ON p.product_id = v.product_id
+//     WHERE p.is_most_selling = 'yes'
+//   `) || [];
+//   const products = await exe("SELECT * FROM products") || [];
+
+//   res.render("user/index", {
+//     sliders,
+//     categories,
+//     most_selling_products,
+//     products
+//   });
+// });
+
+// // ================== Products List ==================
+// router.get('/products', async (req, res) => {
+//   const category_id = req.query.category_id || null;
+//   const selectedPrice = req.query.price || null;
+//   const selectedRating = req.query.rating || null;
+//   const selectedSort = req.query.sort || 'featured';
+
+//   let sql = `
+//     SELECT 
+//       p.*, 
+//       v.product_variant_id, 
+//       v.variation_price, 
+//       v.variation_market_price, 
+//       v.image AS variant_image, 
+//       c.category_name
+//     FROM products p
+//     LEFT JOIN product_variants v ON p.product_id = v.product_id
+//     LEFT JOIN category c ON p.category_id = c.category_id
+//     WHERE 1=1
+//   `;
+//   const params = [];
+
+//   if (category_id) {
+//     sql += ' AND p.category_id = ?';
+//     params.push(category_id);
+//   }
+//   if (selectedPrice === '0-100') {
+//     sql += ' AND v.variation_price <= 100';
+//   } else if (selectedPrice === '100-500') {
+//     sql += ' AND v.variation_price BETWEEN 100 AND 500';
+//   } else if (selectedPrice === '500-1000') {
+//     sql += ' AND v.variation_price BETWEEN 500 AND 1000';
+//   } else if (selectedPrice === '1000+') {
+//     sql += ' AND v.variation_price >= 1000';
+//   }
+//   if (selectedRating) {
+//     sql += ' AND p.rating >= ?';
+//     params.push(selectedRating);
+//   }
+
+//   // Sorting
+//   if (selectedSort === 'price-low') {
+//     sql += ' ORDER BY v.variation_price ASC';
+//   } else if (selectedSort === 'price-high') {
+//     sql += ' ORDER BY v.variation_price DESC';
+//   } else if (selectedSort === 'rating') {
+//     sql += ' ORDER BY p.rating DESC';
+//   } else if (selectedSort === 'newest') {
+//     sql += ' ORDER BY p.created_at DESC';
+//   } else {
+//     sql += ' ORDER BY p.product_id DESC';
+//   }
+
+//   const products = await exe(sql, params) || [];
+//   const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+
+//   res.render('user/products', {
+//     products,
+//     categories,
+//     selectedCategory: category_id,
+//     selectedPrice,
+//     selectedRating,
+//     selectedSort
+//   });
+// });
+
+// // ================== Product Details ==================
+
+
+
+
+// // Route with variant
+
+// // Route without variant
+// // // Route without variant_id
+// // router.get("/product_details/:product_id", async (req, res) => {
+// //     const { product_id } = req.params;
+// //     await renderProductDetails(req, res, product_id);
+// // });
+
+// // // Route with variant_id
+// // router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+// //     const { product_id, variant_id } = req.params;
+// //     await renderProductDetails(req, res, product_id, variant_id);
+// // });
+
+
+// // // Common function
+// // async function renderProductDetails(req, res, product_id, variation_id = null) {
+// //     // Fetch product
+// //     const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+
+// //     // Fetch variants
+// //     const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+// //     const selected_variant = variation_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+// //     // Fetch images
+// //     const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+// //     // Fetch selected variant
+// //     const product_variant = selected_variant
+// //         ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant])
+// //         : [];
+
+// //     res.render("user/product_details", { product, product_variants, product_variant, images,req });
+// // }
+
+
+
+// // Product details without variant_id
+// router.get("/product_details/:product_id", async (req, res) => {
+//     const { product_id } = req.params;
+//     await renderProductDetails(req, res, product_id);
+// });
+
+// // // Product details with variant_id
+// // router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+// //     const { product_id, variant_id } = req.params;
+// //     await renderProductDetails(req, res, product_id, variant_id);
+// // });
+
+// // // Common function
+// // async function renderProductDetails(req, res, product_id, variant_id = null) {
+// //     try {
+// //         // Fetch product
+// //         const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+
+// //         // Fetch all variants
+// //         const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+// //         // Determine selected variant
+// //         const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+// //         // Fetch images
+// //         const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+// //         // Fetch selected variant details
+// //         const product_variant = selected_variant_id
+// //             ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+// //             : [];
+
+// //         res.render("user/product_details", { 
+// //             product, 
+// //             product_variants, 
+// //             product_variant, 
+// //             images,
+// //             req // session access in EJS
+// //         });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).send("Error loading product details");
+// //     }
+// // }
+
+
+
+
+
+
+// // router.get("/product_details/:product_id", async (req, res) => {
+// //   const { product_id } = req.params;
+// //   await renderProductDetails(req, res, product_id);
+// // });
+
+// // router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+// //   const { product_id, variant_id } = req.params;
+// //   await renderProductDetails(req, res, product_id, variant_id);
+// // });
+
+// // async function renderProductDetails(req, res, product_id, variation_id = null) {
+// //   const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+// //   const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+// //   const selected_variant = variation_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+// //   const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+// //   const product_variant = selected_variant
+// //       ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant])
+// //       : [];
+
+// //   res.render("user/product_details", { product, product_variants, product_variant, images, req });
+// // }
+
+
+// async function renderProductDetails(req, res, product_id, variant_id = null) {
+//     // Product fetch
+//     const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+
+//     // Variants fetch
+//     const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+//     // जर variant_id नसेल तर default पहिला variant घे
+//     const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+//     // Selected variant fetch
+//     const product_variant = selected_variant_id
+//         ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+//         : [];
+
+//     // Images fetch
+//     const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+//     res.render("user/product_details", {
+//         product,
+//         product_variants,
+//         product_variant,
+//         images,
+//         req
+//     });
+// }
+
+// // Product details without variant_id
+// router.get("/product_details/:product_id", async (req, res) => {
+//     const { product_id } = req.params;
+//     await renderProductDetails(req, res, product_id);
+// });
+
+// // Product details with variant_id
+// router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+//     const { product_id, variant_id } = req.params;
+//     await renderProductDetails(req, res, product_id, variant_id);
+// });
+
+
+
+// router.get("/create-account", (req, res) => {
+//   res.render("user/create_account"); 
+// });
+
+// // Save Account Data
+// router.post("/save_account", async (req, res) => {
+//   try {
+//     var d = req.body;
+
+//     // SQL Query
+//     var sql = `INSERT INTO users 
+//       (first_name, last_name, email, password, confirm_password, date_of_birth, newsletter) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+//     // Values array
+//     var values = [
+//       d.first_name,
+//       d.last_name,
+//       d.email,
+//       d.password,
+//       d.confirm_password,
+//       d.date_of_birth,
+//       d.newsletter
+//     ];
+
+//     console.log("SQL =>", sql);
+//     console.log("VALUES =>", values);
+
+//     // Execute query
+//     var result = await exe(sql, values);
+
+//     res.send("Account created successfully!");
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error saving account");
+//   }
+// });
+
+
+
+// // login
+// router.get("/login", (req, res) => {
+//   var packet={req};
+//   res.render("user/login.ejs",packet);
+// });
+
+
+
+
+// router.post("/login", async (req, res) => {
+//   const d = req.body;
+//   const sql = `SELECT * FROM users WHERE email=? AND password=?`;
+//   const data = await exe(sql, [d.email, d.password]);
+
+//   if (data.length > 0) {
+//     req.session.user_id = data[0].user_id;
+//     req.session.user_name = data[0].first_name + " " + data[0].last_name;
+//     req.session.user_email = data[0].email;
+//     req.session.user_phone = data[0].phone;
+
+//     res.redirect(d.redirect || '/'); // ✅ Redirect properly
+//   } else {
+//     res.send("Invalid email or password <a href='/login'>Try Again</a>");
+//   }
+// });
+
+
+
+// function checkLogin(req, res, next) {
+//   if (req.session.user_id) {
+//     next();
+//   } else {
+//     // Redirect to login with original URL
+//     res.redirect("/login?redirect=" + encodeURIComponent(req.originalUrl));
+//   }
+// }
+
+// // Middleware → Login check
+// function checkLogin(req, res, next) {
+//   if (req.session.user_id) {
+//     next();
+//   } else {
+//     res.redirect("/login?redirect=" + encodeURIComponent(req.originalUrl));
+//   }
+// }
+
+// // Add to Cart Route
+// router.get("/add_to_cart/:product_id/:variant_id/:color/:quantity", checkLogin, async (req, res) => {
+//   var d = req.params;
+//   var user_id = req.session.user_id;
+
+//   // आधी check कर की item आहे का cart मध्ये
+//   var checkSql = "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?";
+//   var checkData = await exe(checkSql, [user_id, d.product_id, d.variant_id, d.color]);
+
+//   if (checkData.length > 0) {
+//     // जर आधी असेल → quantity update
+//     var updateSql = "UPDATE cart SET quantity = quantity + ? WHERE user_id=? AND product_id=? AND variant_id=? AND color=?";
+//     await exe(updateSql, [d.quantity, user_id, d.product_id, d.variant_id, d.color]);
+//     console.log("Quantity Updated:", d);
+//   } else {
+//     // नसेल → insert
+//     var insertSql = "INSERT INTO cart(user_id, product_id, variant_id, color, quantity) VALUES(?,?,?,?,?)";
+//     await exe(insertSql, [user_id, d.product_id, d.variant_id, d.color, d.quantity]);
+//     console.log("New Item Inserted:", d);
+// //   }
+
+// async function renderProductDetails(req, res, product_id, variant_id = null) {
+//     const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+//     const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+//     const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+//     const product_variant = selected_variant_id
+//         ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+//         : [];
+
+//     const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+//     // ✅ cart check
+//     let cart = [];
+//     if (req.session.user_id && selected_variant_id) {
+//         const sql = `SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?`;
+//         cart = await exe(sql, [req.session.user_id, product_id, selected_variant_id, req.query.color || null]);
+//     }
+
+//     res.render("user/product_details", {
+//         product,
+//         product_variants,
+//         product_variant,
+//         images,
+//         req,
+//         cart
+//     });
+// }
+
+
+
+
+// // Routes
+// router.get("/product_details/:product_id", async (req, res) => {
+//     const { product_id } = req.params;
+//     await renderProductDetails(req, res, product_id);
+// });
+// router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+//     const { product_id, variant_id } = req.params;
+//     await renderProductDetails(req, res, product_id, variant_id);
+// });
+
+//   // Debug log
+//   console.log("Add to Cart Request:", d);
+
+//   // शेवटी product details कडे परत जा
+//   res.redirect("/product_details/" + d.product_id + "?variant_id=" + d.variant_id);
+// });
+
+
+
+
+
+// module.exports = router;
+
+
+var express = require("express");
+var router = express.Router();
+var exe = require("../conn"); // MySQL query function
+
+// ================== Homepage ==================
+router.get("/", async (req, res) => {
+  const sliders = await exe("SELECT * FROM slider") || [];
+  const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+  const most_selling_products = await exe(`
+    SELECT p.*, v.*
+    FROM products p
+    LEFT JOIN product_variants v ON p.product_id = v.product_id
+    WHERE p.is_most_selling = 'yes'
+  `) || [];
+  const products = await exe("SELECT * FROM products") || [];
+
+  res.render("user/index", {
+    sliders,
+    categories,
+    most_selling_products,
+    products
+  });
+});
+
+// ================== Products List ==================
+router.get('/products', async (req, res) => {
+  const category_id = req.query.category_id || null;
+  const selectedPrice = req.query.price || null;
+  const selectedRating = req.query.rating || null;
+  const selectedSort = req.query.sort || 'featured';
+
+  let sql = `
+    SELECT 
+      p.*, 
+      v.product_variant_id, 
+      v.variation_price, 
+      v.variation_market_price, 
+      v.image AS variant_image, 
+      c.category_name
+    FROM products p
+    LEFT JOIN product_variants v ON p.product_id = v.product_id
+    LEFT JOIN category c ON p.category_id = c.category_id
+    WHERE 1=1
+  `;
+  const params = [];
+
+  if (category_id) sql += ' AND p.category_id = ?', params.push(category_id);
+
+  if (selectedPrice === '0-100') sql += ' AND v.variation_price <= 100';
+  else if (selectedPrice === '100-500') sql += ' AND v.variation_price BETWEEN 100 AND 500';
+  else if (selectedPrice === '500-1000') sql += ' AND v.variation_price BETWEEN 500 AND 1000';
+  else if (selectedPrice === '1000+') sql += ' AND v.variation_price >= 1000';
+
+  if (selectedRating) sql += ' AND p.rating >= ?', params.push(selectedRating);
+
+  if (selectedSort === 'price-low') sql += ' ORDER BY v.variation_price ASC';
+  else if (selectedSort === 'price-high') sql += ' ORDER BY v.variation_price DESC';
+  else if (selectedSort === 'rating') sql += ' ORDER BY p.rating DESC';
+  else if (selectedSort === 'newest') sql += ' ORDER BY p.created_at DESC';
+  else sql += ' ORDER BY p.product_id DESC';
+
+  const products = await exe(sql, params) || [];
+  const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+
+  res.render('user/products', {
+    products,
+    categories,
+    selectedCategory: category_id,
+    selectedPrice,
+    selectedRating,
+    selectedSort,
+    req
+  });
+});
+
+// ================== Product Details ==================
+// // ================== Product Details ==================
+// async function renderProductDetails(req, res, product_id, variant_id = null) {
+//     const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+//     const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+//     const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+//     const product_variant = selected_variant_id
+//         ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+//         : [];
+
+//     const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+//     // ✅ cart check
+//     let cart = [];
+//     if (req.session.user_id && selected_variant_id) {
+//         const sql = `SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?`;
+//         cart = await exe(sql, [req.session.user_id, product_id, selected_variant_id, req.query.color || null]);
+//     }
+
+//     res.render("user/product_details", {
+//         product,
+//         product_variants,
+//         product_variant,
+//         images,
+//         req,
+//         cart
+//     });
+// }
+
+// // Routes
+// router.get("/product_details/:product_id", async (req, res) => {
+//     const { product_id } = req.params;
+//     await renderProductDetails(req, res, product_id);
+// });
+// router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+//     const { product_id, variant_id } = req.params;
+//     await renderProductDetails(req, res, product_id, variant_id);
+// });
+
+
+
+
+async function renderProductDetails(req, res, product_id, variant_id = null, color = null) {
+    const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+    const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+    const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+
+    const product_variant = selected_variant_id
+        ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+        : [];
+
+    const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+    // जर color नसेल तर default first color
+    let selected_color = color || (product[0].product_colors ? product[0].product_colors.split(",")[0].trim() : null);
+
+    // ✅ cart check
+    let cart = [];
+    if (req.session.user_id && selected_variant_id && selected_color) {
+        const sql = `SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?`;
+        cart = await exe(sql, [req.session.user_id, product_id, selected_variant_id, selected_color]);
+    }
+
+    res.render("user/product_details", {
+        product,
+        product_variants,
+        product_variant,
+        images,
+        req,
+        cart,
+        color: selected_color   // ✅ आता view मध्ये color defined असेल
+    });
+}
+
+
+
+router.get("/product_details/:product_id", async (req, res) => {
+    const { product_id } = req.params;
+    const { color } = req.query;
+    await renderProductDetails(req, res, product_id, null, color);
+});
+
+router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+    const { product_id, variant_id } = req.params;
+    const { color } = req.query;
+    await renderProductDetails(req, res, product_id, variant_id, color);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ================== Add to Cart ==================
+
+
+
+
+// router.get("/add_to_cart/:product_id/:variant_id/:color/:quantity", checkLogin, async (req, res) => {
+//   const d = req.params;
+//   const user_id = req.session.user_id;
+
+//   const checkData = await exe(
+//     "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?", 
+//     [user_id, d.product_id, d.variant_id, d.color]
+//   );
+
+//   if (checkData.length > 0) {
+//     await exe(
+//       "UPDATE cart SET quantity = quantity + ? WHERE user_id=? AND product_id=? AND variant_id=? AND color=?", 
+//       [d.quantity, user_id, d.product_id, d.variant_id, d.color]
+//     );
+//   } else {
+//     await exe(
+//       "INSERT INTO cart(user_id, product_id, variant_id, color, quantity) VALUES(?,?,?,?,?)", 
+//       [user_id, d.product_id, d.variant_id, d.color, d.quantity]
+//     );
+//   }
+
+//   res.redirect("/product_details/" + d.product_id + "?variant_id=" + d.variant_id + "&color=" + d.color);
+// });
+
+
+
+
+
+
+
+router.get("/create-account", (req, res) => {
+  res.render("user/create_account"); 
+});
+
+// Save Account Data
+router.post("/save_account", async (req, res) => {
+  try {
+    var d = req.body;
+
+    // SQL Query
+    var sql = `INSERT INTO users 
+      (first_name, last_name, email, password, confirm_password, date_of_birth, newsletter) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    // Values array
+    var values = [
+      d.first_name,
+      d.last_name,
+      d.email,
+      d.password,
+      d.confirm_password,
+      d.date_of_birth,
+      d.newsletter
+    ];
+
+    console.log("SQL =>", sql);
+    console.log("VALUES =>", values);
+
+    // Execute query
+    var result = await exe(sql, values);
+
+    res.send("Account created successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving account");
+  }
+});
+
+
+
+// login
+router.get("/login", (req, res) => {
+  var packet={req};
+  res.render("user/login.ejs",packet);
+});
+
+
+
+
+router.post("/login", async (req, res) => {
+  const d = req.body;
+  const sql = `SELECT * FROM users WHERE email=? AND password=?`;
+  const data = await exe(sql, [d.email, d.password]);
+
+  if (data.length > 0) {
+    req.session.user_id = data[0].user_id;
+    req.session.user_name = data[0].first_name + " " + data[0].last_name;
+    req.session.user_email = data[0].email;
+    req.session.user_phone = data[0].phone;
+
+    res.redirect(d.redirect || '/'); // ✅ Redirect properly
+  } else {
+    res.send("Invalid email or password <a href='/login'>Try Again</a>");
+  }
+});
+
+
+
+function checkLogin(req, res, next) {
+  if (req.session.user_id) {
+    next();
+  } else {
+    // Redirect to login with original URL
+    res.redirect("/login?redirect=" + encodeURIComponent(req.originalUrl));
+  }
+}
+
+// Middleware → Login check
+
+// Add to Cart Route
+
+
+
+
+// ================== Add / Update Cart ==================
+// ================== Add / Update Cart ==================
+function checkLogin(req, res, next) {
+  if (req.session.user_id) next();
+  else res.redirect("/login?redirect=" + encodeURIComponent(req.originalUrl));
+}
+
+router.get("/add_to_cart/:product_id/:variant_id/:color/:qty", checkLogin, async (req, res) => {
+  let { product_id, variant_id, color, qty } = req.params;
+  let user_id = req.session.user_id;
+
+  // Check existing
+  let check = await exe(
+    "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+    [user_id, product_id, variant_id, color]
+  );
+
+  if (check.length > 0) {
+    // Update qty
+    await exe(
+      "UPDATE cart SET quantity = quantity + ? WHERE cart_id=?",
+      [qty, check[0].cart_id]
+    );
+  } else {
+    // Insert new
+    await exe(
+      "INSERT INTO cart (user_id, product_id, variant_id, color, quantity, created_at) VALUES (?,?,?,?,?,NOW())",
+      [user_id, product_id, variant_id, color, qty]
+    );
+  }
+
+  res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+});
+
+router.get("/update_cart/:product_id/:variant_id/:color/:qty", checkLogin, async (req, res) => {
+  let { product_id, variant_id, color, qty } = req.params;
+  let user_id = req.session.user_id;
+
+  await exe(
+    "UPDATE cart SET quantity=? WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+    [qty, user_id, product_id, variant_id, color]
+  );
+
+  res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+});
+
+
+
+// // Add to cart
+// router.get("/add_to_cart/:product_id/:variant_id/:color/:qty", async (req, res) => {
+//   let { product_id, variant_id, color, qty } = req.params;
+//   let user_id = req.session.user_id;
+
+//   if (!user_id) return res.redirect("/login");
+
+//   // Check existing
+//   let check = await exe(
+//     "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+//     [user_id, product_id, variant_id, color]
+//   );
+
+//   if (check.length > 0) {
+//     // Update qty
+//     await exe(
+//       "UPDATE cart SET quantity = quantity + ? WHERE cart_id=?",
+//       [qty, check[0].cart_id]
+//     );
+//   } else {
+//     // Insert new
+//     await exe(
+//       "INSERT INTO cart (user_id, product_id, variant_id, color, quantity, created_at) VALUES (?,?,?,?,?,NOW())",
+//       [user_id, product_id, variant_id, color, qty]
+//     );
+//   }
+//   res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+// });
+
+// // Update qty directly
+// router.get("/update_cart/:product_id/:variant_id/:color/:qty", async (req, res) => {
+//   let { product_id, variant_id, color, qty } = req.params;
+//   let user_id = req.session.user_id;
+
+//   if (!user_id) return res.redirect("/login");
+
+//   await exe(
+//     "UPDATE cart SET quantity=? WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+//     [qty, user_id, product_id, variant_id, color]
+//   );
+
+//   res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+// });
+
+
+module.exports = router;
+<!-- <%- include('navbar') %>
+
+<!-- Breadcrumbs -->
+<section class="breadcrumb-section py-3 bg-light">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/products">Products</a></li>
+        <li class="breadcrumb-item"><a href="/products?category=smartphones">Smartphones</a></li>
+        <li class="breadcrumb-item active"><%= product[0].product_name %></li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- Product Details -->
+<section class="product-details-section py-5">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Product Gallery (Left) -->
+      <div class="col-lg-6 order-lg-1">
+        <div class="product-gallery sticky-top">
+          <img id="main_image" src="/uploads/<%= product[0].product_main_image %>" class="img-fluid main-image" alt="<%= product[0].product_name %>">
+          <div class="row g-2 mt-3">
+            <% if (images.length > 0) { %>
+              <% images.slice(0,4).forEach((img, index) => { %>
+                <div class="col-3">
+                  <img src="/uploads/<%= img.image_path %>" 
+                       class="img-fluid thumbnail <%= (index===0 ? 'active' : '') %>" 
+                       alt="<%= product[0].product_name %>"
+                       onclick="changeMainImage(this)">
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="col-3">
+                <img src="/uploads/<%= product[0].product_main_image %>" class="img-fluid thumbnail active" onclick="changeMainImage(this)">
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info (Right) -->
+      <div class="col-lg-6 order-lg-2">
+        <div class="product-info">
+          <h1 class="h2 mb-3"><%= product[0].product_name %></h1>
+
+          <!-- Price -->
+          <!-- <% if(product_variant.length) { %>
+            <div class="product-price mb-4">
+              <span class="current-price h3">₹<%= product_variant[0].variation_market_price.toLocaleString('en-IN') %></span>
+              <% if(product_variant[0].variation_old_price) { %>
+                <span class="old-price ms-2">₹<%= product_variant[0].variation_old_price.toLocaleString('en-IN') %></span>
+                <span class="badge bg-success ms-2">
+                  Save ₹<%= (product_variant[0].variation_market_price - product_variant[0].variation_old_price).toLocaleString('en-IN') %>
+                </span>
+              <% } %>
+            </div>
+          <% } %> -->
+
+          <!-- Stock -->
+          <div class="mb-4">
+            <% if(product_variant.length) { %>
+              <span class="stock-badge bg-success text-white">
+                Only <%= product_variant[0].available_stock %> left in stock
+              </span>
+            <% } %>
+            <span class="text-muted ms-2">Usually ships within 1-2 business days</span>
+          </div>
+
+          <!-- Variations -->
+         
+<!-- Variations -->
+<!-- <div class="mb-4">
+  <h6 class="mb-2">Variation</h6>
+  <div class="variation-group d-flex flex-wrap">
+    <% product_variants.forEach(function(variant) { %>
+      <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= variant.product_variant_id %>">
+        <button type="button" class="variation-option <%= (selected_variant && selected_variant.product_variant_id === variant.product_variant_id) ? 'active' : '' %>">
+          <%= variant.variation_title %>
+        </button>
+      </a>
+    <% }) %>
+  </div>
+</div> -->
+
+<!-- Price Section -->
+      <!-- Price Section -->
+<% if(selected_variant) { %>
+  <div class="product-price mb-4">
+    <span class="current-price h3">₹<%= selected_variant.variation_market_price.toLocaleString('en-IN') %></span>
+    <% if(selected_variant.variation_old_price) { %>
+      <span class="old-price ms-2">₹<%= selected_variant.variation_old_price.toLocaleString('en-IN') %></span>
+      <span class="badge bg-success ms-2">
+        Save ₹<%= (selected_variant.variation_old_price - selected_variant.variation_market_price).toLocaleString('en-IN') %>
+      </span>
+    <% } %>
+  </div>
+<% } %>
+
+<!-- Variant Buttons -->
+<div class="mb-4">
+  <h6 class="mb-2">Variations</h6>
+  <div class="variation-group d-flex flex-wrap">
+    <% product_variants.forEach(function(variant) { %>
+      <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= variant.product_variant_id %>">
+        <button type="button" 
+                class="variation-option btn btn-outline-primary me-2 mb-2 <%= (selected_variant && selected_variant.product_variant_id === variant.product_variant_id) ? 'active' : '' %>">
+          <%= variant.variation_title %>
+        </button>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+
+
+          <!-- Color -->
+          <div class="mb-4">
+            <h6 class="mb-2">Color</h6>
+            <div class="variation-group d-flex flex-wrap">
+              <% if (product[0].product_colors) { %>
+                <% var colors = product[0].product_colors.split(","); %>
+                <input type="hidden" id="color_box" value="<%= color || colors[0].trim() %>">
+
+                <% for (var i = 0; i < colors.length; i++) { 
+                     let thisColor = colors[i].trim(); 
+                %>
+                  <a href="/product_details/<%= product[0].product_id %>?variant_id=<%= product_variant.length ? product_variant[0].product_variant_id : '' %>&color=<%= thisColor %>">
+                    <button 
+                      type="button"
+                      class="variation-option <%= ((!color && i===0) || color === thisColor) ? 'active' : '' %>">
+                      <div class="d-flex align-items-center">
+                        <div class="color-switch me-2" style="background-color: <%= thisColor %>; width:20px; height:20px; border-radius:50%;"></div>
+                        <%= thisColor %>
+                      </div>
+                    </button>
+                  </a>
+                <% } %>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="mb-4">
+            <h6 class="mb-2">Quantity</h6>
+            <div class="quantity-stepper d-inline-flex">
+              <button type="button" onclick="decreaseQty()" class="btn btn-outline-secondary">-</button>
+              <input type="number" id="quantity_box_hidden" min="1" max="10" class="form-control text-center"
+                     value="<%= (cart.length > 0) ? cart[0].quantity : 1 %>" style="width:70px;">
+              <button type="button" onclick="increaseQty()" class="btn btn-outline-secondary">+</button>
+            </div>
+          </div>
+
+          <!-- Add to Cart -->
+          <div class="d-grid gap-3 mb-4">
+            <% if (req.session.user_id) { %>
+              <% if (cart.length > 0) { %>
+                <button type="button" class="btn btn-primary btn-lg w-100" onclick="updateCartQty()">
+                  <i class="bi bi-cart-check me-2"></i> Already in Cart (Update Qty)
+                </button>
+              <% } else { %>
+                <button type="button" class="btn btn-primary btn-lg w-100" onclick="addToCart()">
+                  <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                </button>
+              <% } %>
+            <% } else { %>
+              <a href="/login?redirect=/product_details/<%= product[0].product_id %>" 
+                class="btn btn-outline-primary btn-lg w-100 text-center">
+                <i class="bi bi-lightning me-2"></i> Add to Cart
+              </a>
+            <% } %>
+          </div>
+
+          <!-- Wishlist -->
+          <button class="btn btn-outline-secondary" onclick="toggleWishlist()">
+            <i class="bi bi-heart me-2"></i>Add to Wishlist
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>
+
+<script>
+function changeMainImage(img) {
+  document.getElementById('main_image').src = img.src;
+  document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+  img.classList.add('active');
+}
+
+function addToCart() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= product_variant.length ? product_variant[0].product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  if (!variant_id) return alert("Please select a variant");
+  if (!color) return alert("Please select a color");
+
+  window.location.href = `/add_to_cart/${product_id}/${variant_id}/${color}/${quantity}`;
+}
+
+function updateCartQty() {
+  let product_id = "<%= product[0].product_id %>";
+  let variant_id = "<%= product_variant.length ? product_variant[0].product_variant_id : '' %>";
+  let color = document.getElementById("color_box").value;
+  let quantity = document.getElementById("quantity_box_hidden").value;
+
+  window.location.href = `/update_cart/${product_id}/${variant_id}/${color}/${quantity}`;
+}
+
+function increaseQty() {
+  let qtyInput = document.getElementById("quantity_box_hidden");
+  let current = parseInt(qtyInput.value) || 1;
+  if (current < 10) qtyInput.value = current + 1;
+}
+function decreaseQty() {
+  let qtyInput = document.getElementById("quantity_box_hidden");
+  let current = parseInt(qtyInput.value) || 1;
+  if (current > 1) qtyInput.value = current - 1;
+}
+</script> -->
+
+
+var express = require("express");
+var router = express.Router();
+var exe = require("../conn"); // MySQL query function
+
+// ================== Homepage ==================
+router.get("/", async (req, res) => {
+  const sliders = await exe("SELECT * FROM slider") || [];
+  const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+  const most_selling_products = await exe(`
+    SELECT p.*, v.*
+    FROM products p
+    LEFT JOIN product_variants v ON p.product_id = v.product_id
+    WHERE p.is_most_selling = 'yes'
+  `) || [];
+  const products = await exe("SELECT * FROM products") || [];
+
+  res.render("user/index", {
+    sliders,
+    categories,
+    most_selling_products,
+    products,
+    req
+  });
+});
+
+================== Products List ==================
+router.get("/products", async (req, res) => {
+  const category_id = req.query.category_id || null;
+  const selectedPrice = req.query.price || null;
+  const selectedRating = req.query.rating || null;
+  const selectedSort = req.query.sort || "featured";
+
+  let sql = `
+    SELECT 
+      p.*, 
+      v.product_variant_id, 
+      v.variation_price, 
+      v.variation_market_price, 
+      v.image AS variant_image, 
+      c.category_name
+    FROM products p
+    LEFT JOIN product_variants v ON p.product_id = v.product_id
+    LEFT JOIN category c ON p.category_id = c.category_id
+    WHERE 1=1
+  `;
+  const params = [];
+
+  if (category_id) {
+    sql += " AND p.category_id = ?";
+    params.push(category_id);
+  }
+
+  if (selectedPrice === "0-100") sql += " AND v.variation_price <= 100";
+  else if (selectedPrice === "100-500") sql += " AND v.variation_price BETWEEN 100 AND 500";
+  else if (selectedPrice === "500-1000") sql += " AND v.variation_price BETWEEN 500 AND 1000";
+  else if (selectedPrice === "1000+") sql += " AND v.variation_price >= 1000";
+
+  if (selectedRating) {
+    sql += " AND p.rating >= ?";
+    params.push(selectedRating);
+  }
+
+  if (selectedSort === "price-low") sql += " ORDER BY v.variation_price ASC";
+  else if (selectedSort === "price-high") sql += " ORDER BY v.variation_price DESC";
+  else if (selectedSort === "rating") sql += " ORDER BY p.rating DESC";
+  else if (selectedSort === "newest") sql += " ORDER BY p.created_at DESC";
+  else sql += " ORDER BY p.product_id DESC";
+
+  const products = await exe(sql, params) || [];
+  const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+
+  res.render("user/products", {
+    products,
+    categories,
+    selectedCategory: category_id,
+    selectedPrice,
+    selectedRating,
+    selectedSort,
+    req
+  });
+});
+
+
+
+
+router.get("/product", async (req, res) => {
+  const category_id = req.query.category || null; // query param name 'category'
+  const selectedPrice = req.query.price || null;
+  const selectedRating = req.query.rating || null;
+  const selectedSort = req.query.sort || "featured";
+
+  let sql = `
+   SELECT 
+  p.*, 
+  v.product_variant_id, 
+  v.variation_price, 
+  v.variation_market_price, 
+  v.image AS variant_image, 
+  c.category_name
+FROM products p
+LEFT JOIN product_variants v ON p.product_id = v.product_id
+LEFT JOIN category c ON p.category_id = c.category_id
+WHERE 1=1
+  `;
+  const params = [];
+
+  if (category_id) {
+    sql += " AND p.category_id = ?";
+    params.push(category_id);
+  }
+
+  // ... बाकीच logic / filters / sorting same as your /products route ...
+
+  const products = await exe(sql, params) || [];
+  const categories = await exe("SELECT * FROM category WHERE category_status='active'") || [];
+
+  res.render("user/products", {
+    products,
+    categories,
+    selectedCategory: category_id,
+    selectedPrice,
+    selectedRating,
+    selectedSort,
+    req
+  });
+});
+
+
+// // ================== Product Details ==================
+// async function renderProductDetails(req, res, product_id, variant_id = null, color = null) {
+//   const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+//   const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+//   // selected variant
+//   const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+//   const product_variant = selected_variant_id
+//     ? await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id])
+//     : [];
+
+//   // images (main + suggestions)
+//   const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+//   // color
+//   let selected_color = color || (product[0].product_colors ? product[0].product_colors.split(",")[0].trim() : null);
+
+//   // cart check
+//   let cart = [];
+//   if (req.session.user_id && selected_variant_id && selected_color) {
+//     cart = await exe(
+//       "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+//       [req.session.user_id, product_id, selected_variant_id, selected_color]
+//     );
+//   }
+
+//   res.render("user/product_details", {
+//     product,
+//     product_variants,
+//     product_variant,
+//     images,
+//     req,
+//     cart,
+//     color: selected_color
+//   });
+// }
+
+async function renderProductDetails(req, res, product_id, variant_id = null, color = null) {
+  const product = await exe("SELECT * FROM products WHERE product_id = ?", [product_id]);
+  const product_variants = await exe("SELECT * FROM product_variants WHERE product_id = ?", [product_id]);
+
+  // Selected variant
+  const selected_variant_id = variant_id || (product_variants.length ? product_variants[0].product_variant_id : null);
+  const selected_variant = selected_variant_id
+    ? (await exe("SELECT * FROM product_variants WHERE product_variant_id = ?", [selected_variant_id]))[0]
+    : null;
+
+  // Product images
+  const images = await exe("SELECT * FROM product_images WHERE product_id = ?", [product_id]);
+
+  // Color
+  let selected_color = color || (product[0].product_colors ? product[0].product_colors.split(",")[0].trim() : null);
+
+  // Cart check
+  let cart = [];
+  if (req.session.user_id && selected_variant_id && selected_color) {
+    cart = await exe(
+      "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+      [req.session.user_id, product_id, selected_variant_id, selected_color]
+    );
+  }
+res.render("user/product_details", {
+  product,
+  product_variants,   // array of all variants
+  selected_variant,   // single object (currently selected)
+  images,
+  req,
+  cart,
+  color: selected_color
+});
+
+}
+
+
+
+
+
+
+
+// Routes
+router.get("/product_details/:product_id", async (req, res) => {
+  const { product_id } = req.params;
+  const { color, variant_id } = req.query;
+  await renderProductDetails(req, res, product_id, variant_id, color);
+});
+
+router.get("/product_details/:product_id/:variant_id", async (req, res) => {
+  const { product_id, variant_id } = req.params;
+  const { color } = req.query;
+  await renderProductDetails(req, res, product_id, variant_id, color);
+});
+
+// ================== Account ==================
+router.get("/create-account", (req, res) => {
+  res.render("user/create_account");
+});
+
+router.post("/save_account", async (req, res) => {
+  try {
+    var d = req.body;
+    var sql = `INSERT INTO users 
+      (first_name, last_name, email, password, confirm_password, date_of_birth, newsletter) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    var values = [
+      d.first_name,
+      d.last_name,
+      d.email,
+      d.password,
+      d.confirm_password,
+      d.date_of_birth,
+      d.newsletter
+    ];
+
+    await exe(sql, values);
+    res.send("Account created successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving account");
+  }
+});
+
+// ================== Login ==================
+router.get("/login", (req, res) => {
+  res.render("user/login", { req });
+});
+
+router.post("/login", async (req, res) => {
+  const d = req.body;
+  const sql = `SELECT * FROM users WHERE email=? AND password=?`;
+  const data = await exe(sql, [d.email, d.password]);
+
+  if (data.length > 0) {
+    req.session.user_id = data[0].user_id;
+    req.session.user_name = data[0].first_name + " " + data[0].last_name;
+    req.session.user_email = data[0].email;
+    req.session.user_phone = data[0].phone;
+
+    res.redirect(d.redirect || "/");
+  } else {
+    res.send("Invalid email or password <a href='/login'>Try Again</a>");
+  }
+});
+
+// ================== Cart ==================
+function checkLogin(req, res, next) {
+  if (req.session.user_id) next();
+  else res.redirect("/login?redirect=" + encodeURIComponent(req.originalUrl));
+}
+
+router.get("/add_to_cart/:product_id/:variant_id/:color/:qty", checkLogin, async (req, res) => {
+  let { product_id, variant_id, color, qty } = req.params;
+  let user_id = req.session.user_id;
+
+  let check = await exe(
+    "SELECT * FROM cart WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+    [user_id, product_id, variant_id, color]
+  );
+
+  if (check.length > 0) {
+    await exe("UPDATE cart SET quantity = quantity + ? WHERE cart_id=?", [qty, check[0].cart_id]);
+  } else {
+    await exe(
+      "INSERT INTO cart (user_id, product_id, variant_id, color, quantity, created_at) VALUES (?,?,?,?,?,NOW())",
+      [user_id, product_id, variant_id, color, qty]
+    );
+  }
+
+  res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+});
+
+router.get("/update_cart/:product_id/:variant_id/:color/:qty", checkLogin, async (req, res) => {
+  let { product_id, variant_id, color, qty } = req.params;
+  let user_id = req.session.user_id;
+
+  await exe(
+    "UPDATE cart SET quantity=? WHERE user_id=? AND product_id=? AND variant_id=? AND color=?",
+    [qty, user_id, product_id, variant_id, color]
+  );
+
+  res.redirect(`/product_details/${product_id}?variant_id=${variant_id}&color=${color}`);
+});
+
+module.exports = router;

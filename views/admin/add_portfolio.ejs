@@ -1,0 +1,33 @@
+<%- include('navbar') %>
+
+<div class="container py-5">
+    <h2>Add New Project</h2>
+    <a href="/admin/portfolio" class="btn btn-secondary mb-3">Back to Portfolio List</a>
+
+    <form action="/admin/add_portfolio" method="POST" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label">Project Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Enter project title" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Short Description</label>
+            <textarea name="short_desc" class="form-control" placeholder="Enter short description" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input type="text" name="category" class="form-control" placeholder="Enter project category">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Main Image</label>
+            <input type="file" name="main_image" class="form-control" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Add Project</button>
+    </form>
+</div>
+
+<%- include('footer') %>

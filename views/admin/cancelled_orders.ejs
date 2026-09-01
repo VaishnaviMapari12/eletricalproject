@@ -1,0 +1,49 @@
+<h1>cancelled order</h1>
+
+
+<%- include('navbar.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="text-center my-4">cancelled Orders</h1>
+
+    <table class="table table-bordered table-hover text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>cancelled Date</th>
+                <th>Customer Name</th>
+                <th>Address</th>
+                <th>Total Amount</th>
+                <th>Order Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (orders.length === 0) { %>
+                <tr>
+                    <td colspan="7">No delivered orders found.</td>
+                </tr>
+            <% } else { %>
+                <% orders.forEach(order => { %>
+                    <tr>
+                        <td><%= order.order_id %></td>
+                        <td><%= order.cancelled_date ? order.cancelled_date.toISOString().split('T')[0] : 'N/A' %></td>
+                        <td><%= order.first_name %> <%= order.last_name %></td>
+                        <td><%= order.address %>, <%= order.city %>, <%= order.state %>, <%= order.zip_code %></td>
+                        <td>₹<%= order.total_amount.toLocaleString('en-IN') %></td>
+                        <td><%= order.order_status %></td>
+                        <td>
+                            <a href="/admin/order_details/<%= order.order_id %>" class="btn btn-info btn-sm">Details</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+
+    <!-- Optional: Button to export or process delivered orders -->
+    <div class="text-center my-4">
+        <button class="btn btn-success btn-lg">Export cancelled Orders</button>
+    </div>
+</div>
+<%- include('footer.ejs') %>

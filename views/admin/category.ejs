@@ -1,0 +1,122 @@
+<%- include('navbar.ejs') %>
+
+<!-- Manage Category Section -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center rounded-top-4">
+          <h3 class="mb-0"><i class="bi bi-tags me-2"></i> Manage Category</h3>
+        </div>
+        <div class="card-body p-4">
+          
+          <!-- Add Category Form -->
+          <form action="/admin/save_category" method="post" enctype="multipart/form-data">
+            <div class="row g-4">
+              
+              <!-- Category Name -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Category Name</label>
+                <input type="text" name="category_name" class="form-control shadow-sm" placeholder="Enter Category Name" required>
+              </div>
+
+              <!-- Category Image -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Category Image</label>
+                <input type="file" name="category_image" class="form-control shadow-sm" required>
+              </div>
+
+              <!-- Category Status -->
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Category Status</label>
+                <select name="category_status" class="form-select shadow-sm" required>
+                  <option value="">-- Select Status --</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="col-md-12 text-center mt-3">
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                  <i class="bi bi-plus-circle me-2"></i> Add Category
+                </button>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Existing Categories Table -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-dark text-white text-center rounded-top-4">
+          <h4 class="mb-0"><i class="bi bi-list-ul me-2"></i> Existing Categories</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle text-center shadow-sm">
+              <thead class="table-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>Category Name</th>
+                  <th>Category Image</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (categories && categories.length > 0) { %>
+                  <% categories.forEach(function(category) { %>
+                    <tr>
+                      <td><%= category.category_id %></td>
+                      <td class="fw-semibold"><%= category.category_name %></td>
+                      <td>
+                        <% if (category.category_image) { %>
+                          <img src="/uploads/<%= category.category_image %>" alt="Category Image" 
+                               width="80" height="80" class="rounded shadow-sm">
+                        <% } else { %>
+                          <span class="text-muted">No Image</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <span class="badge px-3 py-2 
+                          <%= category.category_status === 'active' ? 'bg-success' : 'bg-secondary' %>">
+                          <%= category.category_status %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/admin/edit_category/<%= category.category_id %>" 
+                           class="btn btn-sm btn-warning me-2 shadow-sm">
+                          <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="/admin/delete_category/<%= category.category_id %>" 
+                           class="btn btn-sm btn-danger shadow-sm"
+                           onclick="return confirm('Are you sure you want to delete this category?')">
+                          <i class="bi bi-trash"></i> Delete
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="5" class="text-center text-muted">No categories added yet.</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer.ejs') %>

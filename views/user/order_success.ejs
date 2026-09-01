@@ -1,0 +1,26 @@
+<%- include('navbar') %>
+
+<div class="container py-5">
+  <% if(order) { %>
+    <h3>Order #<%= order.order_id %> Placed Successfully!</h3>
+    <p>Paid amount: ₹ <%= order.total_amount %></p>
+
+    <% order.order_products.forEach(product => { %>
+      <div class="d-flex align-items-center mb-2">
+        <img src="/upload/<%= product.product_main_image %>" 
+             alt="<%= product.product_name %>" width="60" class="me-3">
+        <div>
+          <p class="mb-0"><strong><%= product.product_name %></strong></p>
+          <p class="mb-0">Qty: <%= product.quantity %></p>
+          <% if(product.variation_title) { %>
+            <p class="mb-0">Variant: <%= product.variation_title %></p>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-danger">Order details not found.</p>
+  <% } %>
+</div>
+
+<%- include('footer') %>

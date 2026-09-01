@@ -1,0 +1,42 @@
+<%- include('navbar') %>
+<div class="container py-5">
+    <h2>Edit Project</h2>
+    <a href="/admin/portfolio" class="btn btn-secondary mb-3">Back to Portfolio List</a>
+
+    <form action="/admin/update_portfolio/<%= project.id %>" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Project Title</label>
+            <input type="text" name="title" class="form-control" value="<%= project.title %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Short Description</label>
+            <textarea name="short_desc" class="form-control" rows="3" required><%= project.short_desc %></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input type="text" name="category" class="form-control" value="<%= project.category %>">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Current Image</label>
+            <% if (project.main_image) { %>
+                <div class="mb-2">
+                    <img src="/uploads/<%= project.main_image %>" width="200">
+                </div>
+            <% } else { %>
+                <p>No image uploaded</p>
+            <% } %>
+            <input type="hidden" name="old_image" value="<%= project.main_image %>">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Change Image (optional)</label>
+            <input type="file" name="main_image" class="form-control" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Project</button>
+    </form>
+</div>
+<%- include('footer') %>

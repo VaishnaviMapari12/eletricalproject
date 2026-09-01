@@ -1,0 +1,71 @@
+<%- include('navbar.ejs') %>
+
+<section class="wishlist-section py-5">
+    <div class="container">
+        <h2>My Wishlist (<%= wishlist.length %>)</h2>
+
+        <% if(wishlist.length === 0) { %>
+            <div class="text-center py-5">
+                <i class="bi bi-heart display-1"></i>
+                <h3>Your wishlist </h3>
+                <a href="/products" class="btn btn-primary mt-3">Start Shopping</a>
+            </div>
+        <% } else { %>
+            <div class="row g-4">
+                <% wishlist.forEach(function(item) { %>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img src="/uploads/<%= item.variant_image ? item.variant_image : item.product_main_image %>" 
+                                 class="card-img-top" 
+                                 alt="<%= item.product_name %>">
+
+                            <div class="card-body">
+                                <h5><%= item.product_name %></h5>
+
+                                <p>
+                                    ₹<%= item.variation_market_price.toLocaleString('en-IN') %>
+                                    <% if(item.variation_price && item.variation_price > item.variation_market_price) { %>
+                                        <span class="text-muted text-decoration-line-through">
+                                            ₹<%= item.variation_price.toLocaleString('en-IN') %>
+                                        </span>
+                                    <% } %>
+                                </p>
+
+                                <a href="/remove_from_wishlist/<%= item.wishlist_id %>" class="btn btn-outline-danger">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<section class="recently-viewed-section py-5 bg-light">
+    <div class="container">
+        <h3 class="text-center mb-5">You Might Also Like</h3>
+        <div class="row g-4">
+            <% recentlyViewed.forEach(function(product) { %>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100">
+                        <img src="/uploads/<%= product.variant_image ? product.variant_image : product.product_main_image %>" 
+                             class="card-img-top" alt="<%= product.product_name %>">
+                        <div class="card-body">
+                            <h5><%= product.product_name %></h5>
+                            <p>
+                                ₹<%= product.variation_market_price ? product.variation_market_price.toLocaleString('en-IN') : 'N/A' %>
+                                <% if(product.variation_price && product.variation_price > product.variation_market_price) { %>
+                                    <span class="text-muted text-decoration-line-through">
+                                        ₹<%= product.variation_price.toLocaleString('en-IN') %>
+                                    </span>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
+
+<%- include('footer.ejs') %>

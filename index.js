@@ -48,8 +48,6 @@
 //   console.log('Server started: http://localhost:1000');
 // });
 
-
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
@@ -88,7 +86,7 @@ app.use(fileUpload());
 
 app.use(
     session({
-        secret: "acbsc31243",
+        secret: process.env.SESSION_SECRET || "acbsc31243",
         resave: false,
         saveUninitialized: false
     })
@@ -173,7 +171,9 @@ app.use((err, req, res, next) => {
 // SERVER
 // ======================================================
 
-app.listen(1000, () => {
+const PORT = process.env.PORT || 1000;
+
+app.listen(PORT, () => {
 
     console.log(
         "======================================"
@@ -184,7 +184,7 @@ app.listen(1000, () => {
     );
 
     console.log(
-        "http://localhost:1000"
+        `Server running on port ${PORT}`
     );
 
     console.log(
